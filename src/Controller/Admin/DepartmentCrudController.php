@@ -27,7 +27,7 @@ class DepartmentCrudController extends AbstractCrudController
         return $crud
             ->setEntityLabelInSingular('Company Department')
             ->setEntityLabelInPlural('Company Departments')
-                ->setSearchFields(['name', 'company', 'head_id'])
+                ->setSearchFields(['name', 'company', 'head'])
         ;
     }
 
@@ -35,6 +35,7 @@ class DepartmentCrudController extends AbstractCrudController
     {
             return $filters
                     ->add(EntityFilter::new('company'))
+                    ->add(EntityFilter::new('head'))
             ;
     }
 
@@ -46,13 +47,12 @@ class DepartmentCrudController extends AbstractCrudController
 //            TextEditorField::new('description'),
 //        ];
 
-//              yield AssociationField::new('company');
-               yield TextField::new('name');
-               yield TextEditorField::new('description');
+              yield AssociationField::new('company')->autocomplete()->setFormTypeOption('by_reference', false);
+              yield AssociationField::new('head')->autocomplete()->setFormTypeOption('by_reference', false);
+              yield TextField::new('name');
+              yield TextEditorField::new('description');
 //               yield TextareaField::new('text')
 //                       ->hideOnIndex()
                ;
     }
-    // todo add user model and create repositories for entities
-
 }

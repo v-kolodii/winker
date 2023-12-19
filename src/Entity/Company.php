@@ -25,12 +25,16 @@ class Company
     #[ORM\OneToMany(mappedBy: 'company', targetEntity: Department::class, orphanRemoval: true)]
     private Collection $departments;
 
+    #[ORM\OneToMany(mappedBy: 'company', targetEntity: User::class)]
+    private Collection $users;
+
     #[ORM\Column]
     private bool $isActive = true;
 
 
     public function __construct()
     {
+        $this->users = new ArrayCollection();
         $this->departments = new ArrayCollection();
     }
 
@@ -72,6 +76,7 @@ class Company
         return $this->departments;
     }
 
+
     public function addDepartment(Department $department): static
     {
         if (!$this->departments->contains($department)) {
@@ -108,6 +113,36 @@ class Company
 
     public function __toString(): string
     {
-        return $this->name;
+        return $this->getName();
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setCompany($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getCompany() === $this) {
+                $user->setCompany(null);
+            }
+        }
+
+        return $this;
     }
 }

@@ -21,8 +21,8 @@ class Department
     #[ORM\Column(length: 1026, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\Column]
-    private ?int $head_id = null;
+    #[ORM\OneToOne(targetEntity: User::class)]
+    private ?User $head = null;
 
     #[ORM\ManyToOne(inversedBy: 'departments')]
     #[ORM\JoinColumn(nullable: false)]
@@ -34,9 +34,13 @@ class Department
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
     private Collection $departments;
 
+    #[ORM\OneToMany(mappedBy: 'department', targetEntity: User::class)]
+    private Collection $users;
+
     public function __construct()
     {
         $this->departments = new ArrayCollection();
+        $this->users = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -64,19 +68,6 @@ class Department
     public function setDescription(?string $description): static
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-
-    public function getHeadId(): ?int
-    {
-        return $this->head_id;
-    }
-
-    public function setHeadId(int $head_id): static
-    {
-        $this->head_id = $head_id;
 
         return $this;
     }
@@ -131,6 +122,48 @@ class Department
                 $department->setParent(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, User>
+     */
+    public function getUsers(): Collection
+    {
+        return $this->users;
+    }
+
+    public function addUser(User $user): static
+    {
+        if (!$this->users->contains($user)) {
+            $this->users->add($user);
+            $user->setDepartment($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUser(User $user): static
+    {
+        if ($this->users->removeElement($user)) {
+            // set the owning side to null (unless already changed)
+            if ($user->getDepartment() === $this) {
+                $user->setDepartment(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getHead(): ?User
+    {
+        return $this->head;
+    }
+
+    public function setHead(?User $head): static
+    {
+        $this->head = $head;
 
         return $this;
     }
