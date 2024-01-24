@@ -2,6 +2,12 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
+use ApiPlatform\Metadata\Put;
 use App\Entity\Enum\Status;
 use App\Entity\Enum\TaskType;
 use App\Entity\Enum\WinkType;
@@ -10,22 +16,41 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
+#[ApiResource(
+        operations: [
+            new Get(normalizationContext: ['groups' => 'task:read']),
+            new GetCollection(normalizationContext: ['groups' => 'task:list']),
+            new Post(),
+            new Put(),
+            new Delete(),
+        ],
+    denormalizationContext: [
+        'groups' => ['task:write'],
+    ],
+    order: ['wink_type' => 'DESC'],
+    paginationItemsPerPage: 10
+)]
 class Task
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['task:list', 'task:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['task:list', 'task:read'])]
     private ?\DateTimeInterface $created_at = null;
 
     #[ORM\Column(
@@ -33,27 +58,35 @@ class Task
         nullable: true,
         enumType: TaskType::class,
         options: ['comment' => '0:Typical, 1:Regular'])]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private TaskType $task_type = TaskType::TASK_TYPE_TYPICAL;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?\DateTimeInterface $type_base_plane_date = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?\DateTimeInterface $type_reg_daily_finished_time = null;
 
     #[ORM\Column(length: 8, nullable: true)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?string $type_reg_weekly_day = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?\DateTimeInterface $type_reg_weekly_time = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['task:list','task:read', 'task:write'])]
     private ?int $type_reg_month_day = null;
 
     #[ORM\Column(type: Types::TIME_MUTABLE, nullable: true)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?\DateTimeInterface $type_reg_month_time = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?\DateTimeInterface $finished_date = null;
 
     #[ORM\Column(
@@ -61,6 +94,7 @@ class Task
         nullable: true,
         enumType: WinkType::class,
         options: ['comment' => '0:Medium, 1:High, 2:Asap'])]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private WinkType $wink_type = WinkType::WINK_TYPE_MEDIUM;
 
     #[ORM\Column(
@@ -68,15 +102,19 @@ class Task
         nullable: true,
         enumType: Status::class,
         options: ['comment' => '0:New, 1:InProgress, 2:Finished'])]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private Status $status = Status::NEW;
 
     #[ORM\Column]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?int $user_id = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?int $performer_id = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'tasks')]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?self $parent = null;
 
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
