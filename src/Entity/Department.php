@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\DepartmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: DepartmentRepository::class)]
@@ -37,10 +38,14 @@ class Department
     #[ORM\OneToMany(mappedBy: 'department', targetEntity: User::class)]
     private Collection $users;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $created_at = null;
+
     public function __construct()
     {
         $this->departments = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->created_at = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -166,5 +171,15 @@ class Department
         $this->head = $head;
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $created_at): void
+    {
+        $this->created_at = $created_at;
     }
 }

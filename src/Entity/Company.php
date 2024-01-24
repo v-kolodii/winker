@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
@@ -31,11 +32,15 @@ class Company
     #[ORM\Column]
     private bool $isActive = true;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $created_at = null;
+
 
     public function __construct()
     {
         $this->users = new ArrayCollection();
         $this->departments = new ArrayCollection();
+        $this->created_at = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -144,5 +149,15 @@ class Company
         }
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $created_at): void
+    {
+        $this->created_at = $created_at;
     }
 }

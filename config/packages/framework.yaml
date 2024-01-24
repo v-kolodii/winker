@@ -16,6 +16,9 @@ framework:
     php_errors:
         log: true
 
+parameters:
+    customer_db_prefix: wink_com_
+
 when@test:
     framework:
         test: true
