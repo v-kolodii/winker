@@ -1,0 +1,23 @@
+lexik_jwt_authentication:
+#    encoder:
+#        service: lexik_jwt_authentication.encoder.web_token
+#    access_token_issuance:
+#        enabled: true
+#        signature:
+#            algorithm: 'RS256'
+#            key: '%env(resolve:SIGNATURE_KEY)%'
+#    access_token_verification:
+#        enabled: true
+#        signature:
+#            allowed_algorithms: [ 'RS256' ]
+#            keyset: '%env(resolve:SIGNATURE_KEYSET)%'
+#
+#    api_platform:
+#        check_path: /api/login_check
+#        username_path: email
+#        password_path: security.credentials.password
+    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    token_ttl: 3600
+    user_identity_field: email
