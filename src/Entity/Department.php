@@ -182,4 +182,9 @@ class Department
     {
         $this->created_at = $created_at;
     }
+
+    public function __toString(): string
+    {
+        return $this->getName();
+    }
 }

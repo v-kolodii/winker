@@ -160,4 +160,9 @@ class Company
     {
         $this->created_at = $created_at;
     }
+
+    public function getDepartmentsCount(): int
+    {
+        return $this->departments->count();
+    }
 }
