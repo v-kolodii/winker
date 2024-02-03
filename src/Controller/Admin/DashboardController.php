@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_CEO',  message: 'You are not allowed to access the admin dashboard.')]
 class DashboardController extends AbstractDashboardController
 {
     /**
@@ -22,7 +23,6 @@ class DashboardController extends AbstractDashboardController
      * @throws ContainerExceptionInterface
      */
     #[Route('/admin', name: 'admin')]
-    #[IsGranted('ROLE_CUSTOMER', message: 'You are not allowed to access the admin dashboard.')]
     public function index(): Response
     {
         $routeBuilder = $this->container->get(AdminUrlGenerator::class);
