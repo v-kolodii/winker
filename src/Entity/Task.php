@@ -6,8 +6,11 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\Metadata\Put;
+use App\ApiResource\State\Providers\TaskCollectionProvider;
+use App\ApiResource\State\Providers\TaskItemProvider;
 use App\Entity\Enum\Status;
 use App\Entity\Enum\TaskType;
 use App\Entity\Enum\WinkType;
@@ -21,10 +24,14 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ApiResource(
         operations: [
-            new Get(normalizationContext: ['groups' => 'task:read']),
-            new GetCollection(normalizationContext: ['groups' => 'task:list']),
+            new Get(
+                normalizationContext: ['groups' => 'task:read'],
+                provider: TaskItemProvider::class),
+            new GetCollection(
+                normalizationContext: ['groups' => 'task:list'],
+                provider: TaskCollectionProvider::class),
             new Post(),
-            new Put(),
+            new Patch(),
             new Delete(),
         ],
     denormalizationContext: [
@@ -118,12 +125,15 @@ class Task
     private ?self $parent = null;
 
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    #[Groups(['task:list', 'task:read'])]
     private Collection $tasks;
 
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskHasComment::class)]
+    #[Groups(['task:list', 'task:read'])]
     private Collection $taskHasComments;
 
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskHasFile::class)]
+    #[Groups(['task:list', 'task:read'])]
     private Collection $taskHasFiles;
 
     public function __construct()
