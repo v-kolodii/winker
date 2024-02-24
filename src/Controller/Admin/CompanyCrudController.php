@@ -44,6 +44,7 @@ class CompanyCrudController extends AbstractCrudController
                 ->hideOnForm(),
             IntegerField::new('departmentsCount')
                 ->hideOnForm(),
+            TextField::new('db_url'),
             Field::new('isActive'),
         ];
     }

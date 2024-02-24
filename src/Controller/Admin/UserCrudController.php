@@ -36,7 +36,7 @@ class UserCrudController extends AbstractCrudController
     public function configureFields(string $pageName): iterable
     {
         $roleListChoices = [
-            'Customer' => User::ROLE_CUSTOMER,
+            'EMPLOYEE' => User::ROLE_CUSTOMER,
             'CEO' => User::ROLE_CEO,
         ];
 
@@ -48,7 +48,7 @@ class UserCrudController extends AbstractCrudController
             ];
         }
 
-        yield EmailField::new('email');
+        yield TextField::new('email');
         yield TextField::new('password')->hideOnIndex();
         yield TextField::new('firstName');
         yield TextField::new('lastName');
