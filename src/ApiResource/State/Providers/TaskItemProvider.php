@@ -11,9 +11,13 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Resource\Factory\ResourceMetadataCollectionFactoryInterface;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\State\LinksHandlerTrait;
+use App\Doctrine\CompanyEntityManager;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class TaskItemProvider implements ProviderInterface
 {
@@ -22,32 +26,47 @@ class TaskItemProvider implements ProviderInterface
     /**
      * @param QueryItemExtensionInterface[] $itemExtensions
      */
-    public function __construct(ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory, private readonly ManagerRegistry $managerRegistry, private readonly iterable $itemExtensions = [], ContainerInterface $handleLinksLocator = null)
-    {
+    public function __construct(
+        ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory,
+        private readonly ManagerRegistry $managerRegistry,
+        private readonly Security $security,
+        private readonly CompanyEntityManager   $companyEntityManagerService,
+        private readonly iterable $itemExtensions = [],
+        ContainerInterface $handleLinksLocator = null
+    ) {
         $this->resourceMetadataCollectionFactory = $resourceMetadataCollectionFactory;
         $this->handleLinksLocator = $handleLinksLocator;
     }
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): ?object
     {
+        /**@var UserInterface $user */
+        $user = $this->security->getUser();
+        if (! $user->getCompany()) {
+            return null;
+        }
+
         $entityClass = $operation->getClass();
         if (($options = $operation->getStateOptions()) && $options instanceof Options && $options->getEntityClass()) {
             $entityClass = $options->getEntityClass();
         }
 
-
-        //TODO CHANGE DB HERE
-
         /** @var EntityManagerInterface $manager */
-        $manager = $this->managerRegistry->getManagerForClass($entityClass);
+        $manager = $this->managerRegistry->getManagerForClass(User::class);
+
+        $connection = $manager->getConnection();
+        $connection->changeDatabase($user->getCompany()->getDbUrl());
+
+        /** @var EntityManagerInterface $newManager */
+        $newManager = $this->companyEntityManagerService->getEntityManager();
 
         $fetchData = $context['fetch_data'] ?? true;
         if (!$fetchData && \array_key_exists('id', $uriVariables)) {
             // todo : if uriVariables don't contain the id, this fails. This should behave like it does in the following code
-            return $manager->getReference($entityClass, $uriVariables);
+            return $newManager->getReference($entityClass, $uriVariables);
         }
 
-        $repository = $manager->getRepository($entityClass);
+        $repository = $newManager->getRepository($entityClass);
         if (!method_exists($repository, 'createQueryBuilder')) {
             throw new RuntimeException('The repository class must have a "createQueryBuilder" method.');
         }

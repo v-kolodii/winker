@@ -8,7 +8,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
-use ApiPlatform\Metadata\Put;
+use App\ApiResource\State\Processors\PersistProcessor;
+use App\ApiResource\State\Processors\RemoveProcessor;
 use App\ApiResource\State\Providers\TaskCollectionProvider;
 use App\ApiResource\State\Providers\TaskItemProvider;
 use App\Entity\Enum\Status;
@@ -30,9 +31,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
             new GetCollection(
                 normalizationContext: ['groups' => 'task:list'],
                 provider: TaskCollectionProvider::class),
-            new Post(),
-            new Patch(),
-            new Delete(),
+            new Post(
+                processor: PersistProcessor::class
+            ),
+            new Patch(
+                processor: PersistProcessor::class
+            ),
+            new Delete(
+                processor: RemoveProcessor::class
+            ),
         ],
     denormalizationContext: [
         'groups' => ['task:write'],

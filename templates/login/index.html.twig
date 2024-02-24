@@ -1,22 +1,38 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello LoginController!{% endblock %}
+{% block title %}Login{% endblock %}
 
 {% block body %}
     {% if error %}
         <div>{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
 
-    <form action="{{ path('app_login') }}" method="post">
-        <label for="username">Email:</label>
-        <input type="text" id="username" name="_username" value="{{ last_username }}">
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="_password">
-
-        {# If you want to control the URL the user is redirected to on success
-        <input type="hidden" name="_target_path" value="/account"> #}
-        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-        <button type="submit">login</button>
-    </form>
+    <div class="login-container">
+        <div class="wrapper">
+            <div class="wprapp-el">
+                <form action="{{ path('app_login') }}" class="form-horizontal" method="post">
+                    <span class="heading">АВТОРИЗАЦІЯ</span>
+                    <div class="form-group">
+                        <input type="email" class="form-control"  id="username" name="_username" placeholder="E-mail">
+                        <i class="fa fa-user"></i>
+                    </div>
+                    <div class="form-group help">
+                        <input type="password" class="form-control" id="password" name="_password" placeholder="Password">
+                        <i class="fa fa-lock"></i>
+                        <a href="#" class="fa fa-question-circle"></a>
+                    </div>
+                    <div class="form-group">
+                        <div class="main-checkbox">
+                            <input type="checkbox" value="none" id="checkbox1" name="check"/>
+                            <label for="checkbox1"></label>
+                        </div>
+                        <span class="text">Запам'ятати</span>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                        <button type="submit" class="btn btn-default">ВХІД</button>
+                    </div>
+                </form>
+            </div>
+            <a href="{{ path('app_register') }}" class="btn btn-success register-button mt-4">ЗАРЕЄСТРУВАТИСЯ</a>
+        </div><!-- /. -->
+    </div><!-- /.container -->
 {% endblock %}

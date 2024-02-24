@@ -12,10 +12,13 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\Metadata\Resource\Factory\ResourceMetadataCollectionFactoryInterface;
 use ApiPlatform\State\ProviderInterface;
 use App\ApiResource\State\LinksHandlerTrait;
+use App\Doctrine\CompanyEntityManager;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Psr\Container\ContainerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class TaskCollectionProvider implements ProviderInterface
 {
@@ -28,6 +31,7 @@ class TaskCollectionProvider implements ProviderInterface
         ResourceMetadataCollectionFactoryInterface $resourceMetadataCollectionFactory,
         private readonly ManagerRegistry $managerRegistry,
         private readonly Security $security,
+        private readonly CompanyEntityManager   $companyEntityManagerService,
         private readonly iterable $collectionExtensions = [],
         ContainerInterface $handleLinksLocator = null,
     )
@@ -38,23 +42,29 @@ class TaskCollectionProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|null|object
     {
+
+        /**@var UserInterface $user */
+        $user = $this->security->getUser();
+        if (! $user->getCompany()) {
+            return null;
+        }
+
         $entityClass = $operation->getClass();
         if (($options = $operation->getStateOptions()) && $options instanceof Options && $options->getEntityClass()) {
             $entityClass = $options->getEntityClass();
         }
 
-        $user = $this->security->getUser();
-        dd($user);
-
-
-
-        //TODO CHANGE DB HERE
-
-
         /** @var EntityManagerInterface $manager */
-        $manager = $this->managerRegistry->getManagerForClass($entityClass);
+        $manager = $this->managerRegistry->getManagerForClass(User::class);
 
-        $repository = $manager->getRepository($entityClass);
+        $connection = $manager->getConnection();
+        $connection->changeDatabase($user->getCompany()->getDbUrl());
+
+        /** @var EntityManagerInterface $newManager */
+        $newManager = $this->companyEntityManagerService->getEntityManager();
+
+        $repository = $newManager->getRepository($entityClass);
+
         if (!method_exists($repository, 'createQueryBuilder')) {
             throw new RuntimeException('The repository class must have a "createQueryBuilder" method.');
         }
