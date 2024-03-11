@@ -8,7 +8,7 @@ use App\Repository\DepartmentRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-readonly class DepartmentCompanyProvider implements ProviderInterface
+class DepartmentCompanyProvider implements ProviderInterface
 {
     public function __construct(
         private Security       $security,

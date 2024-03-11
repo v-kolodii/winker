@@ -8,7 +8,7 @@ use App\Repository\UserRepository;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-readonly class UserCompanyProvider implements ProviderInterface
+class UserCompanyProvider implements ProviderInterface
 {
     public function __construct(
         private Security       $security,
@@ -21,7 +21,7 @@ readonly class UserCompanyProvider implements ProviderInterface
         /**@var UserInterface $user */
         $user = $this->security->getUser();
         if (! $user->getCompany()) {
-            return null;
+            return [$user];
         }
 
         return $this->repository->findByCompanyId($user->getCompany()->getId());
