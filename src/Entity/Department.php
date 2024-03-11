@@ -2,34 +2,59 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use App\ApiResource\State\Providers\DepartmentCompanyProvider;
 use App\Repository\DepartmentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DepartmentRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(
+            normalizationContext: ['groups' => 'department:read'],
+        ),
+        new GetCollection(
+            paginationEnabled: true,
+            paginationItemsPerPage: 20,
+            normalizationContext: ['groups' => 'department:read'],
+            provider: DepartmentCompanyProvider::class,
+        )
+    ],
+    order: ['id' => 'DESC']
+)]
 class Department
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['department:read', 'user:list', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['department:read', 'user:list', 'user:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 1026, nullable: true)]
+    #[Groups(['department:read'])]
     private ?string $description = null;
 
     #[ORM\OneToOne(targetEntity: User::class)]
+    #[Groups(['department:read'])]
     private ?User $head = null;
 
     #[ORM\ManyToOne(inversedBy: 'departments')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['department:read'])]
     private ?Company $company = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'departments')]
+    #[Groups(['department:read', 'user:list', 'user:read'])]
     private ?self $parent = null;
 
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]

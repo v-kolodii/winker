@@ -20,6 +20,17 @@ class DepartmentRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Department::class);
     }
+    public function findByCompanyId(int $companyId): array
+    {
+        return $this->createQueryBuilder('d')
+            ->andWhere('d.company = :company')
+            ->setParameter('company', $companyId)
+            ->orderBy('d.id', 'ASC')
+            ->getQuery()
+            ->getResult()
+            ;
+    }
+
 
 //    /**
 //     * @return Department[] Returns an array of Department objects

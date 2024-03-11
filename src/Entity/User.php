@@ -2,15 +2,51 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\OpenApi\Model\Operation;
+use App\ApiResource\State\Providers\UserCompanyProvider;
+use App\ApiResource\State\Providers\UserInfoProvider;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
+#[ApiResource(
+    operations: [
+        new Get(
+            uriTemplate: '/users/user-info',
+            openapi: new Operation(
+                summary: 'Get users info',
+                description: 'Use this endpoint to get users info',
+            ),
+            description: '# Get users info',
+            normalizationContext: ['groups' => 'user:read'],
+            provider: UserInfoProvider::class
+        ),
+        new GetCollection(
+            openapi: new Operation(
+                summary: 'Get users company employers',
+                description: 'Use this endpoint to get company employers',
+            ),
+            paginationEnabled: true,
+            paginationItemsPerPage: 20,
+            description: '# Get users company employers',
+            normalizationContext: ['groups' => 'user:list'],
+            provider: UserCompanyProvider::class,
+        )
+    ],
+    denormalizationContext: [
+        'groups' => ['user:write'],
+    ],
+    order: ['id' => 'DESC']
+)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     public const string DEFAULT_ROLE = 'ROLE_USER';
@@ -22,12 +58,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['user:list', 'user:read', 'department:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 180, unique: true)]
+    #[Groups(['user:list', 'user:read'])]
     private ?string $email = null;
 
     #[ORM\Column(nullable: false)]
+    #[Groups(['user:list', 'user:read'])]
     private array $roles = [];
 
     /**
@@ -37,17 +76,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $password = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user:list', 'user:read', 'user:write', 'department:read'])]
     private ?string $firstName = null;
 
     #[ORM\Column(nullable: true)]
+    #[Groups(['user:list', 'user:read', 'user:write', 'department:read'])]
     private ?string $lastName = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['user:list', 'user:read'])]
     private ?Company $company = null;
 
     #[ORM\ManyToOne(inversedBy: 'users')]
     #[ORM\JoinColumn(nullable: true)]
+    #[Groups(['user:list', 'user:read'])]
     private ?Department $department = null;
 
     public function getId(): ?int
