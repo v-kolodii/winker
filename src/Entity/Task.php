@@ -8,9 +8,12 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use ApiPlatform\OpenApi\Model\Operation;
 use App\ApiResource\State\Processors\PersistProcessor;
 use App\ApiResource\State\Processors\RemoveProcessor;
+use App\ApiResource\State\Providers\TaskAssignedToMeCollectionProvider;
 use App\ApiResource\State\Providers\TaskCollectionProvider;
+use App\ApiResource\State\Providers\TaskCreatedByMeCollectionProvider;
 use App\ApiResource\State\Providers\TaskItemProvider;
 use App\Entity\Enum\Status;
 use App\Entity\Enum\TaskType;
@@ -25,10 +28,35 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 #[ApiResource(
         operations: [
+            new GetCollection(
+                uriTemplate: '/tasks/my-tasks',
+                openapi: new Operation(
+                    summary: 'Get tasks created by current user',
+                    description: 'Use this endpoint to get tasks created by current user',
+                ),
+                paginationEnabled: true,
+                paginationItemsPerPage: 20,
+                description: '# Get tasks created by current user',
+                normalizationContext: ['groups' => 'task:list'],
+                provider: TaskCreatedByMeCollectionProvider::class,
+            ),
+            new GetCollection(
+                uriTemplate: '/tasks/assigned-to-me',
+                openapi: new Operation(
+                    summary: 'Get tasks assigned to current user',
+                    description: 'Use this endpoint to get tasks assigned to user',
+                ),
+                paginationEnabled: true,
+                paginationItemsPerPage: 20,
+                description: '# Get tasks assigned to current user',
+                normalizationContext: ['groups' => 'task:list'],
+                provider: TaskAssignedToMeCollectionProvider::class,
+            ),
             new Get(
                 normalizationContext: ['groups' => 'task:read'],
                 provider: TaskItemProvider::class),
             new GetCollection(
+                paginationEnabled: false,
                 normalizationContext: ['groups' => 'task:list'],
                 provider: TaskCollectionProvider::class),
             new Post(
@@ -45,7 +73,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
         'groups' => ['task:write'],
     ],
     order: ['wink_type' => 'DESC'],
-    paginationItemsPerPage: 10
 )]
 class Task
 {

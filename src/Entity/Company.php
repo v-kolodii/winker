@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\CompanyRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,16 +13,29 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: CompanyRepository::class)]
+#[ApiResource(
+    operations: [
+        new Get(
+            normalizationContext: ['groups' => ['company:read','department:read']],
+        ),
+        new GetCollection(
+            paginationEnabled: true,
+            paginationItemsPerPage: 20,
+            normalizationContext: ['groups' => ['company:read','department:read']],
+        )
+    ],
+    order: ['id' => 'ASC']
+)]
 class Company
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['department:read', 'user:list', 'user:read'])]
+    #[Groups(['company:read', 'department:read', 'user:list', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['department:read', 'user:list', 'user:read'])]
+    #[Groups(['company:read', 'department:read', 'user:list', 'user:read'])]
     private ?string $name = null;
 
 
@@ -33,10 +49,11 @@ class Company
     private Collection $users;
 
     #[ORM\Column]
-    #[Groups(['department:read', 'user:list', 'user:read'])]
+    #[Groups(['company:read', 'department:read', 'user:list', 'user:read'])]
     private bool $isActive = true;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['company:read', 'department:read', 'user:list', 'user:read'])]
     private ?\DateTimeInterface $created_at = null;
 
 

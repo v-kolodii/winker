@@ -27,3 +27,9 @@ services:
         tags:
             -   name: kernel.event_subscriber
                 dispatcher: security.event_dispatcher.main
+    
+    App\ApiResource\State\Providers\TaskCreatedByMeCollectionProvider:
+        tags: [ { name: 'api_platform.collection_data_provider', priority: 2 } ]
+        
+    App\ApiResource\State\Providers\TaskAssignedToMeCollectionProvider:
+        tags: [ { name: 'api_platform.collection_data_provider', priority: 2 } ]

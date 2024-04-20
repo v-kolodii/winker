@@ -2,13 +2,14 @@
 
 namespace App\Doctrine;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Exception\MissingMappingDriverImplementation;
 use Doctrine\Persistence\ManagerRegistry;
 
-class CompanyEntityManager
+readonly class CompanyEntityManager
 {
-    public function __construct(private readonly ManagerRegistry $managerRegistry)
+    public function __construct(private ManagerRegistry $managerRegistry)
     {
     }
 
@@ -18,7 +19,9 @@ class CompanyEntityManager
     public function getEntityManager(): EntityManager
     {
         $em = $this->managerRegistry->getManager();
+        /**@var Connection $connection */
+        $connection = $this->managerRegistry->getConnection();
 
-        return new EntityManager($this->managerRegistry->getConnection(), $em->getConfiguration(), $em->getEventManager());
+        return new EntityManager($connection, $em->getConfiguration(), $em->getEventManager());
     }
 }

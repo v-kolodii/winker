@@ -23,10 +23,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new Get(
             uriTemplate: '/users/user-info',
             openapi: new Operation(
-                summary: 'Get users info',
-                description: 'Use this endpoint to get users info',
+                summary: 'Get user info',
+                description: 'Use this endpoint to get user info',
             ),
-            description: '# Get users info',
+            description: '# Get user info',
             normalizationContext: ['groups' => 'user:read'],
             provider: UserInfoProvider::class
         ),
@@ -35,8 +35,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 summary: 'Get users company employers',
                 description: 'Use this endpoint to get company employers',
             ),
-            paginationEnabled: true,
-            paginationItemsPerPage: 20,
+            paginationEnabled: false,
             description: '# Get users company employers',
             normalizationContext: ['groups' => 'user:list'],
             provider: UserCompanyProvider::class,
