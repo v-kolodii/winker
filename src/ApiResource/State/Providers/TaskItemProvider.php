@@ -43,7 +43,7 @@ class TaskItemProvider implements ProviderInterface
         /**@var UserInterface $user */
         $user = $this->security->getUser();
         if (! $user->getCompany()) {
-            return null;
+            throw new RuntimeException(sprintf('%s. User ID: %d must have a company', __CLASS__, $user->getId()));
         }
 
         $entityClass = $operation->getClass();

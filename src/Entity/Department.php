@@ -11,6 +11,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: DepartmentRepository::class)]
@@ -22,7 +23,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         new GetCollection(
             paginationEnabled: true,
             paginationItemsPerPage: 20,
-            normalizationContext: ['groups' => 'department:read'],
+            normalizationContext: ['groups' => 'department:collection:read'],
             provider: DepartmentCompanyProvider::class,
         )
     ],
@@ -33,34 +34,36 @@ class Department
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['department:read', 'user:list', 'user:read'])]
+    #[Groups(['department:read', 'department:collection:read', 'user:list', 'user:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['department:read', 'user:list', 'user:read'])]
+    #[Groups(['department:read', 'department:collection:read', 'user:list', 'user:read'])]
     private ?string $name = null;
 
     #[ORM\Column(length: 1026, nullable: true)]
-    #[Groups(['department:read'])]
+    #[Groups(['department:read', 'department:collection:read'])]
     private ?string $description = null;
 
     #[ORM\OneToOne(targetEntity: User::class)]
-    #[Groups(['department:read'])]
+    #[Groups(['department:read', 'department:collection:read',])]
     private ?User $head = null;
 
     #[ORM\ManyToOne(inversedBy: 'departments')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Groups(['department:read'])]
     private ?Company $company = null;
 
     #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'departments')]
+    #[JoinColumn(name: 'parent_id', referencedColumnName: 'id')]
     #[Groups(['department:read', 'user:list', 'user:read'])]
     private ?self $parent = null;
 
     #[ORM\OneToMany(mappedBy: 'parent', targetEntity: self::class)]
+    #[Groups(['department:read', 'department:collection:read'])]
     private Collection $departments;
 
     #[ORM\OneToMany(mappedBy: 'department', targetEntity: User::class)]
+    #[Groups(['department:read'])]
     private Collection $users;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
