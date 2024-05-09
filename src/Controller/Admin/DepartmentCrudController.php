@@ -41,8 +41,8 @@ class DepartmentCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
-            ->setEntityLabelInSingular('Company Department')
-            ->setEntityLabelInPlural('Company Departments')
+            ->setEntityLabelInSingular('Департамент')
+            ->setEntityLabelInPlural('Департаменти')
                 ->setSearchFields(['name', 'company', 'head'])
         ;
     }
