@@ -27,19 +27,14 @@ readonly class TaskHasCommentProvider implements ProviderInterface
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): CommentDTO
     {
         $user = $this->getUser();
-        $taskId = (int) $uriVariables['taskId'];
-        $commentId = (int) $uriVariables['commentId'];
+        $taskId = (int) $uriVariables['taskId'] ?? null;
+        $commentId = (int) $uriVariables['commentId'] ?? null;
 
         if (empty($taskId) || empty($commentId)) {
             throw new \InvalidArgumentException();
         }
 
-        /** @var EntityManagerInterface $manager */
-        $manager = $this->managerRegistry->getManagerForClass(User::class);
-        $connection = $manager->getConnection();
-        $connection->changeDatabase($user->getCompany()->getDbUrl());
-        /** @var EntityManagerInterface $newManager */
-        $newManager = $this->companyEntityManagerService->getEntityManager();
+        $newManager = $this->getNewManager($user);
 
         $task = $newManager->getRepository(Task::class)->find($taskId);
         $comment = $newManager->getRepository(TaskHasComment::class)->findOneBy(['id' => $commentId, 'task' => $task]);

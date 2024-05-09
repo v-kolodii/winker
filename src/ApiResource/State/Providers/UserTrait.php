@@ -3,6 +3,8 @@
 namespace App\ApiResource\State\Providers;
 
 use ApiPlatform\Exception\RuntimeException;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 trait UserTrait
@@ -16,5 +18,17 @@ trait UserTrait
         }
 
         return $user;
+    }
+
+    private function getNewManager(UserInterface $user): EntityManagerInterface
+    {
+        /** @var EntityManagerInterface $manager */
+        $manager = $this->managerRegistry->getManagerForClass(User::class);
+        $connection = $manager->getConnection();
+        $connection->changeDatabase($user->getCompany()->getDbUrl());
+        /** @var EntityManagerInterface $newManager */
+        $newManager = $this->companyEntityManagerService->getEntityManager();
+
+        return $newManager;
     }
 }

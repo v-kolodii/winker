@@ -5,15 +5,15 @@ namespace App\ApiResource\State\Providers;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Doctrine\CompanyEntityManager;
-use App\DTO\CommentDTO;
+use App\DTO\TasksFileDTO;
 use App\Entity\Task;
-use App\Entity\TaskHasComment;
+use App\Entity\TaskHasFile;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
-readonly class TaskHasCommentsProvider implements ProviderInterface
+readonly class TaskHasFileProvider implements ProviderInterface
 {
     use UserTrait;
 
@@ -24,31 +24,21 @@ readonly class TaskHasCommentsProvider implements ProviderInterface
     ) {
     }
 
-    public function provide(Operation $operation, array $uriVariables = [], array $context = []): array
+    public function provide(Operation $operation, array $uriVariables = [], array $context = []): TasksFileDTO
     {
         $user = $this->getUser();
-
         $taskId = (int) $uriVariables['taskId'] ?? null;
+        $fileId = (int) $uriVariables['fileId'] ?? null;
 
-        if (empty($taskId)) {
+        if (empty($taskId) || empty($fileId)) {
             throw new \InvalidArgumentException();
         }
 
         $newManager = $this->getNewManager($user);
 
         $task = $newManager->getRepository(Task::class)->find($taskId);
-        $comments = $newManager->getRepository(TaskHasComment::class)->findBy(['task' => $task]);
+        $file = $newManager->getRepository(TaskHasFile::class)->findOneBy(['id' => $fileId, 'task' => $task]);
 
-        return $this->mapToDTOs($comments);
-    }
-
-    /**
-     * @param TaskHasComment[] $comments
-     */
-    private function mapToDTOs(array $comments): array
-    {
-        return array_map(static function (TaskHasComment $comment) {
-            return CommentDTO::fromEntity($comment);
-        }, $comments);
+        return TasksFileDTO::fromEntity($file);
     }
 }

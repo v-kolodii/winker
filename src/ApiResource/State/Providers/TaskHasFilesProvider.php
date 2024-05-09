@@ -5,15 +5,15 @@ namespace App\ApiResource\State\Providers;
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProviderInterface;
 use App\Doctrine\CompanyEntityManager;
-use App\DTO\CommentDTO;
+use App\DTO\TasksFileDTO;
 use App\Entity\Task;
-use App\Entity\TaskHasComment;
+use App\Entity\TaskHasFile;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
-readonly class TaskHasCommentsProvider implements ProviderInterface
+readonly class TaskHasFilesProvider implements ProviderInterface
 {
     use UserTrait;
 
@@ -37,18 +37,19 @@ readonly class TaskHasCommentsProvider implements ProviderInterface
         $newManager = $this->getNewManager($user);
 
         $task = $newManager->getRepository(Task::class)->find($taskId);
-        $comments = $newManager->getRepository(TaskHasComment::class)->findBy(['task' => $task]);
 
-        return $this->mapToDTOs($comments);
+        $files = $newManager->getRepository(TaskHasFile::class)->findBy(['task' => $task]);
+
+        return $this->mapToDTOs($files);
     }
 
     /**
-     * @param TaskHasComment[] $comments
+     * @param TaskHasFile[] $files
      */
-    private function mapToDTOs(array $comments): array
+    private function mapToDTOs(array $files): array
     {
-        return array_map(static function (TaskHasComment $comment) {
-            return CommentDTO::fromEntity($comment);
-        }, $comments);
+        return array_map(static function (TaskHasFile $file) {
+            return TasksFileDTO::fromEntity($file);
+        }, $files);
     }
 }

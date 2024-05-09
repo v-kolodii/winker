@@ -8,11 +8,11 @@ use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\State\Providers\UserTrait;
 use App\Doctrine\CompanyEntityManager;
-use App\Entity\TaskHasComment;
+use App\Entity\TaskHasFile;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
-final readonly class RemoveCommentProcessor implements ProcessorInterface
+final readonly class RemoveFileProcessor implements ProcessorInterface
 {
     use UserTrait;
 
@@ -27,9 +27,9 @@ final readonly class RemoveCommentProcessor implements ProcessorInterface
     {
         $user = $this->getUser();
         $newManager = $this->getNewManager($user);
-        $comment = $newManager->getRepository(TaskHasComment::class)->find($data->id);
-        $comment = $newManager->getReference(TaskHasComment::class, $comment->getId());
-        $newManager->remove($comment);
+        $file = $newManager->getRepository(TaskHasFile::class)->find($data->id);
+        $file = $newManager->getReference(TaskHasFile::class, $file->getId());
+        $newManager->remove($file);
         $newManager->flush();
     }
 }

@@ -7,15 +7,17 @@ use ApiPlatform\State\ProcessorInterface;
 use App\ApiResource\State\Providers\UserTrait;
 use App\Doctrine\CompanyEntityManager;
 use App\DTO\CommentDTO;
+use App\DTO\TasksFileDTO;
 use App\Entity\Task;
 use App\Entity\TaskHasComment;
+use App\Entity\TaskHasFile;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\UnitOfWork;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
 
-class CommentCreateProcessor implements ProcessorInterface
+class TaskHasFileCreateProcessor implements ProcessorInterface
 {
     use UserTrait;
 
@@ -26,28 +28,29 @@ class CommentCreateProcessor implements ProcessorInterface
     ) {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): CommentDTO
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): TasksFileDTO
     {
         $user = $this->getUser();
-        $taskId = (int) $uriVariables['taskId'];
+        $taskId = (int) $uriVariables['taskId'] ?? null;
         if (empty($taskId)) {
             throw new \InvalidArgumentException();
         }
 
         $newManager = $this->getNewManager($user);
-        $comment = (new TaskHasComment())
-            ->setComment($data->comment)
+        $file = (new TaskHasFile())
+            ->setLocalName($data->local_name)
+            ->setGlobalName($data->global_name)
             ->setUserId($user->getId());
 
         $task = $newManager->getRepository(Task::class)->find($taskId);
 
         if ($newManager->getUnitOfWork()->getEntityState($task) !== UnitOfWork::STATE_MANAGED) {
             $task = $newManager->merge($task);
-            $comment->setTask($task);
+            $file->setTask($task);
         }
-        $newManager->persist($comment);
+        $newManager->persist($file);
         $newManager->flush();
 
-        return CommentDTO::fromEntity($comment);
+        return TasksFileDTO::fromEntity($file);
     }
 }
