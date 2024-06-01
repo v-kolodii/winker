@@ -93,7 +93,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?Department $department = null;
 
     #[ORM\Column(nullable: true)]
-    #[Groups(['user:list', 'user:read'])]
     private ?string $deviceId = null;
 
     public function getId(): ?int
