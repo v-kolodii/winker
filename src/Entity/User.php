@@ -92,6 +92,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:list', 'user:read'])]
     private ?Department $department = null;
 
+    #[ORM\Column(nullable: true)]
+    #[Groups(['user:list', 'user:read'])]
+    private ?string $deviceId = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -213,5 +217,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
          };
 
          return $this->email;
+    }
+
+    public function getDeviceId(): ?string
+    {
+        return $this->deviceId;
+    }
+
+    public function setDeviceId(?string $deviceId): self
+    {
+        $this->deviceId = $deviceId;
+
+        return $this;
     }
 }
