@@ -5,7 +5,9 @@ namespace App\Entity;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model\Operation;
+use App\ApiResource\State\Processors\AddDeviceTokenProcessor;
 use App\ApiResource\State\Providers\UserCompanyProvider;
 use App\ApiResource\State\Providers\UserInfoProvider;
 use App\Repository\UserRepository;
@@ -40,7 +42,13 @@ use Symfony\Component\Serializer\Annotation\Groups;
             description: '# Get users company employers',
             normalizationContext: ['groups' => 'user:list'],
             provider: UserCompanyProvider::class,
-        )
+        ),
+        new Post(
+            uriTemplate: '/users/device',
+            normalizationContext: ['groups' => 'user:list'],
+            denormalizationContext: ['groups' => ['user:create:device']],
+            processor: AddDeviceTokenProcessor::class,
+        ),
     ],
     denormalizationContext: [
         'groups' => ['user:write'],
@@ -92,9 +100,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true)]
     #[Groups(['user:list', 'user:read'])]
     private ?Department $department = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?string $deviceId = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
     #[Groups(['user:list', 'user:read'])]
@@ -230,18 +235,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
          };
 
          return $this->email;
-    }
-
-    public function getDeviceId(): ?string
-    {
-        return $this->deviceId;
-    }
-
-    public function setDeviceId(?string $deviceId): self
-    {
-        $this->deviceId = $deviceId;
-
-        return $this;
     }
 
     public function getCreatedAt(): ?\DateTimeInterface
