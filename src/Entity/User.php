@@ -9,6 +9,7 @@ use ApiPlatform\OpenApi\Model\Operation;
 use App\ApiResource\State\Providers\UserCompanyProvider;
 use App\ApiResource\State\Providers\UserInfoProvider;
 use App\Repository\UserRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -94,6 +95,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(nullable: true)]
     private ?string $deviceId = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    #[Groups(['user:list', 'user:read'])]
+    private ?\DateTimeInterface $created_at = null;
+
+    public function __construct()
+    {
+        $this->created_at = new \DateTime('now');
+    }
 
     public function getId(): ?int
     {
@@ -194,9 +204,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->firstName;
     }
 
-    public function setFirstName(?string $firstName): void
+    public function setFirstName(?string $firstName): self
     {
         $this->firstName = $firstName;
+
+        return $this;
     }
 
     public function getLastName(): ?string
@@ -204,9 +216,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->lastName;
     }
 
-    public function setLastName(?string $lastName): void
+    public function setLastName(?string $lastName): self
     {
         $this->lastName = $lastName;
+
+        return $this;
     }
 
     public function __toString(): string
@@ -226,6 +240,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDeviceId(?string $deviceId): self
     {
         $this->deviceId = $deviceId;
+
+        return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->created_at;
+    }
+
+    public function setCreatedAt(?\DateTimeInterface $created_at): self
+    {
+        $this->created_at = $created_at;
 
         return $this;
     }

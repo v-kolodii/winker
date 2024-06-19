@@ -74,6 +74,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     order: ['wink_type' => 'DESC'],
 )]
+#[ORM\HasLifecycleCallbacks]
 class Task
 {
     #[ORM\Id]
