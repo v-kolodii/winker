@@ -19,6 +19,7 @@ use App\Entity\Enum\Status;
 use App\Entity\Enum\TaskType;
 use App\Entity\Enum\WinkType;
 use App\Repository\TaskRepository;
+use DateTimeInterface;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -55,19 +56,19 @@ use Symfony\Component\Serializer\Annotation\Groups;
             new Get(
                 normalizationContext: ['groups' => 'task:read'],
                 provider: TaskItemProvider::class),
-            new GetCollection(
-                paginationEnabled: false,
-                normalizationContext: ['groups' => 'task:list'],
-                provider: TaskCollectionProvider::class),
+//            new GetCollection(
+//                paginationEnabled: false,
+//                normalizationContext: ['groups' => 'task:list'],
+//                provider: TaskCollectionProvider::class),
             new Post(
                 processor: PersistProcessor::class
             ),
             new Patch(
                 processor: PersistProcessor::class
             ),
-            new Delete(
-                processor: RemoveProcessor::class
-            ),
+//            new Delete(
+//                processor: RemoveProcessor::class
+//            ),
         ],
     denormalizationContext: [
         'groups' => ['task:write'],
@@ -170,6 +171,10 @@ class Task
     #[ORM\OneToMany(mappedBy: 'task', targetEntity: TaskHasFile::class)]
     #[Groups(['task:list', 'task:read'])]
     private Collection $taskHasFiles;
+
+    #[ORM\Column]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
+    private bool $list_enable = false;
 
     public function __construct()
     {
@@ -477,18 +482,30 @@ class Task
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "task_type" => $this->getTaskType()->value,
-            "type_base_plane_date" => $this->getTypeBasePlaneDate(),
-            "type_reg_daily_finished_time" => $this->getTypeRegDailyFinishedTime(),
+            "type_base_plane_date" => $this->getTypeBasePlaneDate()->format(DateTimeInterface::ATOM),
+            "type_reg_daily_finished_time" => $this->getTypeRegDailyFinishedTime()->format(DateTimeInterface::ATOM),
             "type_reg_weekly_day" => $this->getTypeRegWeeklyDay(),
-            "type_reg_weekly_time" => $this->getTypeRegWeeklyTime(),
+            "type_reg_weekly_time" => $this->getTypeRegWeeklyTime()->format(DateTimeInterface::ATOM),
             "type_reg_month_day" => $this->getTypeRegMonthDay(),
-            "type_reg_month_time" => $this->getTypeRegMonthTime(),
-            "finished_date" => $this->getFinishedDate(),
+            "type_reg_month_time" => $this->getTypeRegMonthTime()->format(DateTimeInterface::ATOM),
+            "finished_date" => $this->getFinishedDate()->format(DateTimeInterface::ATOM),
             "wink_type" => $this->getWinkType()->value,
             "status" => $this->getStatus()->value,
             "user_id" => $this->getUserId(),
             "performer_id" => $this->getPerformerId(),
             "parent" => $this->getParent()?->getId(),
         ];
+    }
+
+    public function getListEnable(): bool
+    {
+        return $this->list_enable;
+    }
+
+    public function setListEnable(bool $list_enable): self
+    {
+        $this->list_enable = $list_enable;
+
+        return $this;
     }
 }
