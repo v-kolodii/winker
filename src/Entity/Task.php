@@ -494,6 +494,7 @@ class Task
             "user_id" => $this->getUserId(),
             "performer_id" => $this->getPerformerId(),
             "parent" => $this->getParent()?->getId(),
+            "list_enable" => $this->getListEnable()
         ];
     }
 
