@@ -470,4 +470,25 @@ class Task
 
         return $this;
     }
+
+    public function toArray(): array
+    {
+        return [
+            "title" => $this->getTitle(),
+            "description" => $this->getDescription(),
+            "task_type" => $this->getTaskType()->value,
+            "type_base_plane_date" => $this->getTypeBasePlaneDate(),
+            "type_reg_daily_finished_time" => $this->getTypeRegDailyFinishedTime(),
+            "type_reg_weekly_day" => $this->getTypeRegWeeklyDay(),
+            "type_reg_weekly_time" => $this->getTypeRegWeeklyTime(),
+            "type_reg_month_day" => $this->getTypeRegMonthDay(),
+            "type_reg_month_time" => $this->getTypeRegMonthTime(),
+            "finished_date" => $this->getFinishedDate(),
+            "wink_type" => $this->getWinkType()->value,
+            "status" => $this->getStatus()->value,
+            "user_id" => $this->getUserId(),
+            "performer_id" => $this->getPerformerId(),
+            "parent" => $this->getParent()?->getId(),
+        ];
+    }
 }

@@ -64,7 +64,8 @@ class NotificationService
         ]);
 
         return CloudMessage::withTarget('token', $userDevice->getDeviceToken())
-            ->withNotification($notification);
+            ->withNotification($notification)
+            ->withData($task->toArray());
     }
 
     private function createUpdatedMessage(Task $task): CloudMessage
@@ -90,6 +91,7 @@ class NotificationService
         ]);
 
         return CloudMessage::withTarget('token', $deviceToken)
-            ->withNotification($notification);
+            ->withNotification($notification)
+            ->withData($task->toArray());
     }
 }
