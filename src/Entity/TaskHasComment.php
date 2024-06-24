@@ -16,6 +16,7 @@ use App\ApiResource\State\Providers\TaskHasCommentProvider;
 use App\ApiResource\State\Providers\TaskHasCommentsProvider;
 use App\DTO\CommentDTO;
 use App\Repository\TaskHasCommentRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\JoinColumn;
@@ -143,6 +144,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
         ],
     paginationEnabled: false,
 )]
+#[ORM\HasLifecycleCallbacks]
 class TaskHasComment
 {
     #[ORM\Id]
@@ -239,5 +241,32 @@ class TaskHasComment
         $this->updated_at = $updated_at;
 
         return $this;
+    }
+
+    public function getNewNotificationTitle(): string
+    {
+        return 'New Comment!';
+    }
+
+    public function getUpdatedNotificationTitle(): string
+    {
+        return 'Comment was updated!';
+    }
+
+    public function getMessageType(): string
+    {
+        return 'comment';
+    }
+
+    public function toArray(): array
+    {
+        return [
+            "id" => $this->getId(),
+            "task" => $this->getTask()->getId(),
+            "comment" => $this->getComment(),
+            "user" => $this->getUserId(),
+            "createdAt" => $this->getCreatedAt()->format(DateTimeInterface::ATOM),
+            "updatedAt" => $this->getUpdatedAt()->format(DateTimeInterface::ATOM),
+        ];
     }
 }

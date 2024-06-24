@@ -32,7 +32,7 @@ readonly class TaskChangedListener
         try {
             $this->notificationService->sendNotification('new', $entity);
         } catch (\Exception|Throwable $exception) {
-            $this->logger->error( '[NEW. SEND NOTIFICATION ERROR]: ' . $exception->getMessage());
+            $this->logger->error( '[NEW TASK. SEND NOTIFICATION ERROR]: ' . $exception->getMessage());
         }
     }
 
@@ -41,7 +41,7 @@ readonly class TaskChangedListener
         try {
             $this->notificationService->sendNotification('updated', $task);
         } catch (\Exception|Throwable $exception) {
-            $this->logger->error( '[UPDATE. SEND NOTIFICATION ERROR]: ' . $exception->getMessage());
+            $this->logger->error( '[UPDATE TASK. SEND NOTIFICATION ERROR]: ' . $exception->getMessage());
         }
     }
 }

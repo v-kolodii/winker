@@ -31,11 +31,11 @@ class NotificationService
      * @throws MessagingException
      * @throws FirebaseException|EntityNotFoundException
      */
-    public function sendNotification(string $type, Task $task): void
+    public function sendNotification(string $type, object $object): void
     {
-        $message = match ($type){
-            self::NEW => $this->createNewMessage($task),
-            self::UPDATED => $this->createUpdatedMessage($task),
+        $message = match ($type) {
+            self::NEW => $this->createNewMessage($object),
+            self::UPDATED => $this->createUpdatedMessage($object),
         };
 
         $this->messaging->send($message);
@@ -44,33 +44,52 @@ class NotificationService
     /**
      * @throws EntityNotFoundException
      */
-    private function createNewMessage(Task $task): CloudMessage
+    private function createNewMessage(object $object): CloudMessage
     {
-        $performerId = $task->getPerformerId();
+        if ($object instanceof Task) {
+            $task = $object;
+            $performerId = $task->getPerformerId();
+        } else {
+            $task = $object->getTask();
+            $performerId = $task->getPerformerId();
+            if ($object->getUserId() == $performerId) {
+                $performerId = $task->getUserId();
+            }
+        }
+
         $userDevice = $this->entityManager->getRepository(UserDevice::class)->findOneBy(['userId' => $performerId]);
 
         if (!$userDevice->getDeviceToken()) {
             throw new EntityNotFoundException('User\'s device token not found. User id ' . $performerId);
         }
-        $title = 'Нове завдання!';
-        $body = sprintf(
-            'Створене нове завдання "%s"',
-            $task->getTitle()
-        );
 
         $notification = Notification::fromArray([
-            'title' => $title,
-            'body' => $body,
+            'title' => $object->getNewNotificationTitle(),
         ]);
+
+        $data = array_merge(
+            ['target' => $object->toArray()],
+            ['task' => $task->toArray()],
+            ['message_type' => $object->getMessageType()]
+        );
 
         return CloudMessage::withTarget('token', $userDevice->getDeviceToken())
             ->withNotification($notification)
-            ->withData($task->toArray());
+            ->withData($data);
     }
 
-    private function createUpdatedMessage(Task $task): CloudMessage
+    private function createUpdatedMessage(object $object): CloudMessage
     {
-        $recipientId = $task->getPerformerId();
+        if ($object instanceof Task) {
+            $task = $object;
+            $recipientId = $task->getPerformerId();
+        } else {
+            $task = $object->getTask();
+            $recipientId = $task->getPerformerId();
+            if ($object->getUserId() == $recipientId) {
+                $recipientId = $task->getUserId();
+            }
+        }
 
         $userDevice = $this->entityManager->getRepository(UserDevice::class)->findOneBy(['userId' => $recipientId]);
         $deviceToken = $userDevice->getDeviceToken();
@@ -79,19 +98,18 @@ class NotificationService
             throw new EntityNotFoundException('User\'s device token not found. User id ' . $recipientId);
         }
 
-        $title = 'Завдання оновлено!';
-        $body = sprintf(
-            'Завдання %s оновлено!',
-            $task->getTitle()
-        );
-
         $notification = Notification::fromArray([
-            'title' => $title,
-            'body' => $body,
+            'title' => $object->getUpdatedNotificationTitle(),
         ]);
+
+        $data = array_merge(
+            ['target' => $object->toArray()],
+            ['task' => $task->toArray()],
+            ['message_type' => $object->getMessageType()]
+        );
 
         return CloudMessage::withTarget('token', $deviceToken)
             ->withNotification($notification)
-            ->withData($task->toArray());
+            ->withData($data);
     }
 }

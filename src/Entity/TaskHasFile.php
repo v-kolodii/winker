@@ -14,8 +14,10 @@ use App\ApiResource\State\Providers\TaskHasFileProvider;
 use App\ApiResource\State\Providers\TaskHasFilesProvider;
 use App\DTO\TasksFileDTO;
 use App\Repository\TaskHasFileRepository;
+use DateTimeInterface;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Google\Type\DateTime;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity(repositoryClass: TaskHasFileRepository::class)]
@@ -114,6 +116,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
     ],
     paginationEnabled: false,
 )]
+#[ORM\HasLifecycleCallbacks]
 class TaskHasFile
 {
     #[ORM\Id]
@@ -202,5 +205,32 @@ class TaskHasFile
         $this->global_name = $globalName;
 
         return $this;
+    }
+
+    public function getNewNotificationTitle(): string
+    {
+        return 'New File!';
+    }
+
+    public function getUpdatedNotificationTitle(): string
+    {
+        return '';
+    }
+
+    public function getMessageType(): string
+    {
+        return 'file';
+    }
+
+    public function toArray(): array
+    {
+        return [
+            "id" => $this->getId(),
+            "task" => $this->getTask()->getId(),
+            "local_name" => $this->getLocalName(),
+            "global_name" => $this->getGlobalName(),
+            "user" => $this->getUserId(),
+            "createdAt" => $this->getCreatedAt()->format(DateTimeInterface::ATOM),
+        ];
     }
 }

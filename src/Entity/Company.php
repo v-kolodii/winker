@@ -56,6 +56,38 @@ class Company
     #[Groups(['company:read', 'department:read', 'user:list', 'user:read'])]
     private ?\DateTimeInterface $created_at = null;
 
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Groups(['company:read'])]
+    private ?string $imagePath1 = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Groups(['company:read'])]
+    private ?string $imagePath2 = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Groups(['company:read'])]
+    private ?string $imagePath3 = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Groups(['company:read'])]
+    private ?string $imagePath4 = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Groups(['company:read'])]
+    private ?string $imagePath5 = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Groups(['company:read'])]
+    private ?string $imagePath6 = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Groups(['company:read'])]
+    private ?string $imagePath7 = null;
+
+    #[ORM\Column(length: 1024, nullable: true)]
+    #[Groups(['company:read'])]
+    private ?string $imagePath8 = null;
+
 
     public function __construct()
     {
@@ -185,5 +217,101 @@ class Company
     public function getDepartmentsCount(): int
     {
         return $this->departments->count();
+    }
+
+    public function getImagePath1(): ?string
+    {
+        return $this->imagePath1;
+    }
+
+    public function setImagePath1(?string $imagePath1): self
+    {
+        $this->imagePath1 = $imagePath1;
+
+        return $this;
+    }
+
+    public function getImagePath2(): ?string
+    {
+        return $this->imagePath2;
+    }
+
+    public function setImagePath2(?string $imagePath2): self
+    {
+        $this->imagePath2 = $imagePath2;
+
+        return $this;
+    }
+
+    public function getImagePath3(): ?string
+    {
+        return $this->imagePath3;
+    }
+
+    public function setImagePath3(?string $imagePath3): self
+    {
+        $this->imagePath3 = $imagePath3;
+
+        return $this;
+    }
+
+    public function getImagePath4(): ?string
+    {
+        return $this->imagePath4;
+    }
+
+    public function setImagePath4(?string $imagePath4): self
+    {
+        $this->imagePath4 = $imagePath4;
+
+        return $this;
+    }
+
+    public function getImagePath5(): ?string
+    {
+        return $this->imagePath5;
+    }
+
+    public function setImagePath5(?string $imagePath5): self
+    {
+        $this->imagePath5 = $imagePath5;
+
+        return $this;
+    }
+
+    public function getImagePath6(): ?string
+    {
+        return $this->imagePath6;
+    }
+
+    public function setImagePath6(?string $imagePath6): self
+    {
+        $this->imagePath6 = $imagePath6;
+
+        return $this;
+    }
+
+    public function getImagePath7(): ?string
+    {
+        return $this->imagePath7;
+    }
+
+    public function setImagePath7(?string $imagePath7): self
+    {
+        $this->imagePath7 = $imagePath7;
+
+        return $this;
+    }
+
+    public function getImagePath8(): ?string
+    {
+        return $this->imagePath8;
+    }
+
+    public function setImagePath8(?string $imagePath8): self
+    {
+        $this->imagePath8 = $imagePath8;
+
+        return $this;
     }
 }

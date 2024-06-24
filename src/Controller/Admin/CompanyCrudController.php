@@ -44,8 +44,16 @@ class CompanyCrudController extends AbstractCrudController
                 ->hideOnForm(),
             IntegerField::new('departmentsCount')
                 ->hideOnForm(),
-            TextField::new('db_url'),
+            TextField::new('db_url')->hideOnForm(),
             Field::new('isActive'),
+            Field::new('imagePath1')->hideOnIndex(),
+            Field::new('imagePath2')->hideOnIndex(),
+            Field::new('imagePath3')->hideOnIndex(),
+            Field::new('imagePath4')->hideOnIndex(),
+            Field::new('imagePath5')->hideOnIndex(),
+            Field::new('imagePath6')->hideOnIndex(),
+            Field::new('imagePath7')->hideOnIndex(),
+            Field::new('imagePath8')->hideOnIndex(),
         ];
     }
 }

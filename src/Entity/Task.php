@@ -509,4 +509,19 @@ class Task
 
         return $this;
     }
+
+    public function getNewNotificationTitle(): string
+    {
+        return 'New Task!';
+    }
+
+    public function getUpdatedNotificationTitle(): string
+    {
+        return 'Task was updated!';
+    }
+
+    public function getMessageType(): string
+    {
+        return 'task';
+    }
 }
