@@ -230,7 +230,7 @@ class TaskHasFile
             "local_name" => $this->getLocalName(),
             "global_name" => $this->getGlobalName(),
             "user" => $this->getUserId(),
-            "createdAt" => $this->getCreatedAt()->format(DateTimeInterface::ATOM),
+            "createdAt" => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
         ];
     }
 }

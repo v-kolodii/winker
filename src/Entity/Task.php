@@ -70,6 +70,9 @@ use Symfony\Component\Serializer\Annotation\Groups;
 //                processor: RemoveProcessor::class
 //            ),
         ],
+    normalizationContext: [
+        'groups' => ['task:read'],
+    ],
     denormalizationContext: [
         'groups' => ['task:write'],
     ],
@@ -482,13 +485,13 @@ class Task
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "task_type" => $this->getTaskType()->value,
-            "type_base_plane_date" => $this->getTypeBasePlaneDate()->format(DateTimeInterface::ATOM),
-            "type_reg_daily_finished_time" => $this->getTypeRegDailyFinishedTime()->format(DateTimeInterface::ATOM),
+            "type_base_plane_date" => $this->getTypeBasePlaneDate()?->format(DateTimeInterface::ATOM),
+            "type_reg_daily_finished_time" => $this->getTypeRegDailyFinishedTime()?->format(DateTimeInterface::ATOM),
             "type_reg_weekly_day" => $this->getTypeRegWeeklyDay(),
-            "type_reg_weekly_time" => $this->getTypeRegWeeklyTime()->format(DateTimeInterface::ATOM),
+            "type_reg_weekly_time" => $this->getTypeRegWeeklyTime()?->format(DateTimeInterface::ATOM),
             "type_reg_month_day" => $this->getTypeRegMonthDay(),
-            "type_reg_month_time" => $this->getTypeRegMonthTime()->format(DateTimeInterface::ATOM),
-            "finished_date" => $this->getFinishedDate()->format(DateTimeInterface::ATOM),
+            "type_reg_month_time" => $this->getTypeRegMonthTime()?->format(DateTimeInterface::ATOM),
+            "finished_date" => $this->getFinishedDate()?->format(DateTimeInterface::ATOM),
             "wink_type" => $this->getWinkType()->value,
             "status" => $this->getStatus()->value,
             "user_id" => $this->getUserId(),

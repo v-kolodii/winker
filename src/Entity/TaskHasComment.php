@@ -262,11 +262,11 @@ class TaskHasComment
     {
         return [
             "id" => $this->getId(),
-            "task" => $this->getTask()->getId(),
+            "task" => $this->getTask()?->getId(),
             "comment" => $this->getComment(),
             "user" => $this->getUserId(),
-            "createdAt" => $this->getCreatedAt()->format(DateTimeInterface::ATOM),
-            "updatedAt" => $this->getUpdatedAt()->format(DateTimeInterface::ATOM),
+            "createdAt" => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
+            "updatedAt" => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
         ];
     }
 }
