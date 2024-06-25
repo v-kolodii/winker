@@ -67,11 +67,11 @@ class NotificationService
             'title' => $object->getNewNotificationTitle(),
         ]);
 
-        $data = array_merge(
-            ['target' => $object->toArray()],
-            ['task' => $task->toArray()],
-            ['mes_type' => $object->getMessageType()]
-        );
+        $data = [
+            'target' => json_encode($object->toArray()),
+            'task' => json_encode($task->toArray()),
+            'mes_type' => $object->getMessageType()
+        ];
 
         return CloudMessage::withTarget('token', $userDevice->getDeviceToken())
             ->withNotification($notification)
@@ -102,11 +102,11 @@ class NotificationService
             'title' => $object->getUpdatedNotificationTitle(),
         ]);
 
-        $data = array_merge(
-            ['target' => $object->toArray()],
-            ['task' => $task->toArray()],
-            ['mes_type' => $object->getMessageType()]
-        );
+        $data = [
+            'target' => json_encode($object->toArray()),
+            'task' => json_encode($task->toArray()),
+            'mes_type' => $object->getMessageType()
+        ];
 
         return CloudMessage::withTarget('token', $deviceToken)
             ->withNotification($notification)
