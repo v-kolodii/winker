@@ -482,6 +482,7 @@ class Task
     public function toArray(): array
     {
         return [
+            "id" => $this->getId(),
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "task_type" => $this->getTaskType()->value,
