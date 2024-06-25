@@ -70,7 +70,7 @@ class NotificationService
         $data = array_merge(
             ['target' => $object->toArray()],
             ['task' => $task->toArray()],
-            ['message_type' => $object->getMessageType()]
+            ['messageType' => $object->getMessageType()]
         );
 
         return CloudMessage::withTarget('token', $userDevice->getDeviceToken())
@@ -105,7 +105,7 @@ class NotificationService
         $data = array_merge(
             ['target' => $object->toArray()],
             ['task' => $task->toArray()],
-            ['message_type' => $object->getMessageType()]
+            ['messageType' => $object->getMessageType()]
         );
 
         return CloudMessage::withTarget('token', $deviceToken)
