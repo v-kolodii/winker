@@ -12,6 +12,7 @@ use Kreait\Firebase\Exception\MessagingException;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification;
+use Psr\Log\LoggerInterface;
 
 class NotificationService
 {
@@ -21,6 +22,7 @@ class NotificationService
     private Messaging $messaging;
 
     public function __construct(
+        private LoggerInterface     $logger,
         private readonly EntityManagerInterface $entityManager,
         Factory $factory,
     ) {
@@ -38,7 +40,8 @@ class NotificationService
             self::UPDATED => $this->createUpdatedMessage($object),
         };
 
-        $this->messaging->send($message);
+        $result = $this->messaging->send($message);
+        $this->logger->info('MESSAGE SENDED', ['type' => $type, 'result' => $result]);
     }
 
     /**
