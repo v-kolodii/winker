@@ -63,9 +63,9 @@ class NotificationService
             throw new EntityNotFoundException('User\'s device token not found. User id ' . $performerId);
         }
 
-//        $notification = Notification::fromArray([
-//            'title' => $object->getNewNotificationTitle(),
-//        ]);
+        $notification = Notification::fromArray([
+            'title' => $object->getNewNotificationTitle(),
+        ]);
 
         $data = [
             'target' => json_encode($object->toArray()),
@@ -74,7 +74,7 @@ class NotificationService
         ];
 
         return CloudMessage::withTarget('token', $userDevice->getDeviceToken())
-//            ->withNotification($notification)
+            ->withNotification($notification)
             ->withData($data);
     }
 
@@ -98,9 +98,9 @@ class NotificationService
             throw new EntityNotFoundException('User\'s device token not found. User id ' . $recipientId);
         }
 
-//        $notification = Notification::fromArray([
-//            'title' => $object->getUpdatedNotificationTitle(),
-//        ]);
+        $notification = Notification::fromArray([
+            'title' => $object->getUpdatedNotificationTitle(),
+        ]);
 
         $data = [
             'target' => json_encode($object->toArray()),
@@ -109,7 +109,7 @@ class NotificationService
         ];
 
         return CloudMessage::withTarget('token', $deviceToken)
-//            ->withNotification($notification)
+            ->withNotification($notification)
             ->withData($data);
     }
 }
