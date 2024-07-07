@@ -16,9 +16,9 @@ class CommentDTO
         public ?string $comment = null,
         #[Groups(['comment:read', 'comment:collection:read'])]
         public ?int $user = null,
-        #[Groups(['comment:read', 'comment:collection:read'])]
+        #[Groups(['comment:write', 'comment:read', 'comment:collection:read'])]
         public ?string $createdAt = null,
-        #[Groups(['comment:read', 'comment:collection:read'])]
+        #[Groups(['comment:write', 'comment:read', 'comment:collection:read'])]
         public ?string $updatedAt = null,
     ){}
 

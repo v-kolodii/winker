@@ -18,7 +18,7 @@ class TasksFileDTO
         public ?string $global_name = null,
         #[Groups(['file:read', 'file:collection:read'])]
         public ?int $user = null,
-        #[Groups(['file:read', 'file:collection:read'])]
+        #[Groups(['file:write', 'file:read', 'file:collection:read'])]
         public ?string $createdAt = null,
     ){}
 

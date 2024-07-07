@@ -146,7 +146,7 @@ class TaskHasFile
 
     public function __construct()
     {
-        $this->created_at = new \DateTime('now');
+//        $this->created_at = new \DateTime('now');
     }
 
     public function getId(): ?int
@@ -232,5 +232,12 @@ class TaskHasFile
             "user" => $this->getUserId(),
             "createdAt" => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
         ];
+    }
+
+    public function setCreatedAt(?DateTimeInterface $created_at): self
+    {
+        $this->created_at = $created_at;
+
+        return $this;
     }
 }

@@ -96,7 +96,7 @@ class Task
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
-    #[Groups(['task:list', 'task:read'])]
+    #[Groups(['task:list', 'task:read', 'task:write'])]
     private ?\DateTimeInterface $created_at = null;
 
     #[ORM\Column(
@@ -184,7 +184,6 @@ class Task
         $this->tasks = new ArrayCollection();
         $this->taskHasComments = new ArrayCollection();
         $this->taskHasFiles = new ArrayCollection();
-        $this->created_at = new \DateTime('now');
     }
 
     public function __toString(): string
@@ -507,11 +506,9 @@ class Task
         return $this->list_enable;
     }
 
-    public function setListEnable(bool $list_enable): self
+    public function setListEnable(bool $list_enable): void
     {
         $this->list_enable = $list_enable;
-
-        return $this;
     }
 
     public function getNewNotificationTitle(): string

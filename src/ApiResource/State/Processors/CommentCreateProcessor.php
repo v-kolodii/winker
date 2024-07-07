@@ -26,6 +26,9 @@ class CommentCreateProcessor implements ProcessorInterface
     ) {
     }
 
+    /**
+     * @throws \Exception
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): CommentDTO
     {
         $user = $this->getUser();
@@ -35,8 +38,13 @@ class CommentCreateProcessor implements ProcessorInterface
         }
 
         $newManager = $this->getNewManager($user);
+
+        $createdAt = $data->createdAt !== null ? new \DateTime($data->createdAt) : new \DateTime();
+        $updatedAt = $data->updatedAt !== null ? new \DateTime($data->updatedAt) : new \DateTime();
         $comment = (new TaskHasComment())
             ->setComment($data->comment)
+            ->setCreatedAt($createdAt)
+            ->setUpdatedAt($updatedAt)
             ->setUserId($user->getId());
 
         $task = $newManager->getRepository(Task::class)->find($taskId);

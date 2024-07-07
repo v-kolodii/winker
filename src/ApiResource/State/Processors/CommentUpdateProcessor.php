@@ -25,6 +25,9 @@ class CommentUpdateProcessor implements ProcessorInterface
     ) {
     }
 
+    /**
+     * @throws \Exception
+     */
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): CommentDTO
     {
         $user = $this->getUser();
@@ -39,7 +42,8 @@ class CommentUpdateProcessor implements ProcessorInterface
 
         $task = $newManager->getRepository(Task::class)->find($taskId);
         $comment = $newManager->getRepository(TaskHasComment::class)->findOneBy(['id' => $commentId, 'task' => $task]);
-        $comment->setComment($data->comment)->setUpdatedAt(new \DateTime('now'));
+        $updatedAt = $data->updatedAt !== null ? new \DateTime($data->updatedAt) : new \DateTime();
+        $comment->setComment($data->comment)->setUpdatedAt($updatedAt);
 
         $newManager->flush();
 

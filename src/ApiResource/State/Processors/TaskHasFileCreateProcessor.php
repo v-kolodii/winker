@@ -37,9 +37,11 @@ class TaskHasFileCreateProcessor implements ProcessorInterface
         }
 
         $newManager = $this->getNewManager($user);
+        $createdAt = $data->createdAt !== null ? new \DateTime($data->createdAt) : new \DateTime();
         $file = (new TaskHasFile())
             ->setLocalName($data->local_name)
             ->setGlobalName($data->global_name)
+            ->setCreatedAt($createdAt)
             ->setUserId($user->getId());
 
         $task = $newManager->getRepository(Task::class)->find($taskId);
