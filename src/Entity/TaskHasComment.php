@@ -265,8 +265,8 @@ class TaskHasComment
             "task" => $this->getTask()?->getId(),
             "comment" => $this->getComment(),
             "user" => $this->getUserId(),
-            "createdAt" => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
-            "updatedAt" => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
+            "created_at" => $this->getCreatedAt()?->format(DateTimeInterface::ATOM),
+            "updated_at" => $this->getUpdatedAt()?->format(DateTimeInterface::ATOM),
         ];
     }
 }

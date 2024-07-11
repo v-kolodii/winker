@@ -497,7 +497,8 @@ class Task
             "user_id" => $this->getUserId(),
             "performer_id" => $this->getPerformerId(),
             "parent" => $this->getParent()?->getId(),
-            "list_enable" => $this->getListEnable()
+            "list_enable" => $this->getListEnable(),
+            "created_at" => $this->getCreatedAt()->format(DateTimeInterface::ATOM),
         ];
     }
 
