@@ -16,13 +16,13 @@ use Psr\Log\LoggerInterface;
 
 class NotificationService
 {
-    private const string NEW = 'new';
-    private const string UPDATED = 'updated';
+    public const string NEW = 'new';
+    public const string UPDATED = 'updated';
 
     private Messaging $messaging;
 
     public function __construct(
-        private LoggerInterface     $logger,
+        private readonly LoggerInterface $logger,
         private readonly EntityManagerInterface $entityManager,
         Factory $factory,
     ) {

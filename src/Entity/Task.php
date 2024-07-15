@@ -3,18 +3,17 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model\Operation;
 use App\ApiResource\State\Processors\PersistProcessor;
-use App\ApiResource\State\Processors\RemoveProcessor;
+use App\ApiResource\State\Processors\TaskUpdateProcessor;
 use App\ApiResource\State\Providers\TaskAssignedToMeCollectionProvider;
-use App\ApiResource\State\Providers\TaskCollectionProvider;
 use App\ApiResource\State\Providers\TaskCreatedByMeCollectionProvider;
 use App\ApiResource\State\Providers\TaskItemProvider;
+use App\DTO\TaskDTO;
 use App\Entity\Enum\Status;
 use App\Entity\Enum\TaskType;
 use App\Entity\Enum\WinkType;
@@ -64,7 +63,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 processor: PersistProcessor::class
             ),
             new Patch(
-                processor: PersistProcessor::class
+                normalizationContext: ['groups' => 'task:update:read'],
+                denormalizationContext: ['groups' => 'task:update'],
+                input: TaskDTO::class,
+                output: TaskDTO::class,
+                read: false,
+                processor: TaskUpdateProcessor::class,
             ),
 //            new Delete(
 //                processor: RemoveProcessor::class
