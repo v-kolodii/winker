@@ -77,7 +77,7 @@ class NotificationService
         ];
 
         return CloudMessage::withTarget('token', $userDevice->getDeviceToken())
-            ->withNotification($notification)
+//            ->withNotification($notification)
             ->withData($data);
     }
 
@@ -112,7 +112,7 @@ class NotificationService
         ];
 
         return CloudMessage::withTarget('token', $deviceToken)
-            ->withNotification($notification)
+//            ->withNotification($notification)
             ->withData($data);
     }
 }
