@@ -39,7 +39,6 @@ class NotificationPerformerCollectionProvider implements ProviderInterface
 
     public function provide(Operation $operation, array $uriVariables = [], array $context = []): array|null|object
     {
-
         /**@var UserInterface $user */
         $user = $this->security->getUser();
         if (! $user->getCompany()) {
@@ -47,7 +46,7 @@ class NotificationPerformerCollectionProvider implements ProviderInterface
         }
         $userId = $uriVariables['performer_id'];
 
-        if (empty($userId)) {
+        if (!$userId) {
             throw new \InvalidArgumentException();
         }
 
@@ -61,6 +60,7 @@ class NotificationPerformerCollectionProvider implements ProviderInterface
         $newManager = $this->companyEntityManagerService->getEntityManager();
 
         $repository = $newManager->getRepository(Notification::class);
+
         return $repository->createQueryBuilder('nt')
             ->andWhere('nt.performer_id = :user_id')
             ->setParameter('user_id', $userId)

@@ -26,10 +26,8 @@ final readonly class NotificationRemoveProcessor implements ProcessorInterface
 
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): void
     {
-        $user = $this->getUser();
-        $newManager = $this->getNewManager($user);
-        $notification = $newManager->getRepository(Notification::class)->find($data->getId());
-        $newManager->remove($notification);
-        $newManager->flush();
+        $manager = $this->managerRegistry->getManager();
+        $manager->remove($data);
+        $manager->flush();
     }
 }

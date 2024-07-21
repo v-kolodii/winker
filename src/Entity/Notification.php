@@ -6,6 +6,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model\Operation;
@@ -35,8 +36,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 provider: NotificationCollectionProvider::class,
             ),
             new GetCollection(
-                uriTemplate: '/notifications/{performer_id}',
-                uriVariables: ['performer_id'],
+                uriTemplate: '/notifications/performer/{performer_id}',
+                uriVariables: [
+                    'performer_id' => new Link(fromClass: User::class, identifiers: ['id']),
+                ],
                 openapiContext: [
                     'parameters' => [
                         [
