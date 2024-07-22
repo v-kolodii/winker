@@ -13,6 +13,7 @@ use App\ApiResource\State\Processors\TaskUpdateProcessor;
 use App\ApiResource\State\Providers\TaskAssignedToMeCollectionProvider;
 use App\ApiResource\State\Providers\TaskCreatedByMeCollectionProvider;
 use App\ApiResource\State\Providers\TaskItemProvider;
+use App\ApiResource\State\Providers\TaskProvider;
 use App\DTO\TaskDTO;
 use App\Entity\Enum\Status;
 use App\Entity\Enum\TaskType;
@@ -54,7 +55,7 @@ use Symfony\Component\Serializer\Annotation\Groups;
             ),
             new Get(
                 normalizationContext: ['groups' => 'task:read'],
-                provider: TaskItemProvider::class),
+                provider: TaskProvider::class),
 //            new GetCollection(
 //                paginationEnabled: false,
 //                normalizationContext: ['groups' => 'task:list'],

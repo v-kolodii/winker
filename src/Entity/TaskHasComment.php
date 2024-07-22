@@ -12,6 +12,7 @@ use ApiPlatform\Metadata\Put;
 use App\ApiResource\State\Processors\CommentCreateProcessor;
 use App\ApiResource\State\Processors\CommentUpdateProcessor;
 use App\ApiResource\State\Processors\RemoveCommentProcessor;
+use App\ApiResource\State\Providers\TaskHasCommentByIdProvider;
 use App\ApiResource\State\Providers\TaskHasCommentProvider;
 use App\ApiResource\State\Providers\TaskHasCommentsProvider;
 use App\DTO\CommentDTO;
@@ -44,6 +45,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 output: CommentDTO::class,
                 provider: TaskHasCommentsProvider::class
             ),
+            new Get(
+                uriTemplate: '/comment/{id}',
+                uriVariables: [
+                    'id' => new Link(fromProperty: 'id', fromClass: TaskHasComment::class)],
+                normalizationContext: ['groups' => 'comment:read'],
+                provider: TaskHasCommentByIdProvider::class),
             new Get(
                 uriTemplate: '/tasks/{taskId}/comments/{commentId}',
                 uriVariables: ['taskId' => new Link(fromProperty: 'taskHasComments', fromClass: Task::class), 'commentId' => new Link(fromProperty: 'id', fromClass: TaskHasComment::class)],

@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Link;
 use ApiPlatform\Metadata\Post;
 use App\ApiResource\State\Processors\RemoveFileProcessor;
 use App\ApiResource\State\Processors\TaskHasFileCreateProcessor;
+use App\ApiResource\State\Providers\TaskHasFileByIdProvider;
 use App\ApiResource\State\Providers\TaskHasFileProvider;
 use App\ApiResource\State\Providers\TaskHasFilesProvider;
 use App\DTO\TasksFileDTO;
@@ -42,6 +43,12 @@ use Symfony\Component\Serializer\Annotation\Groups;
             output: TasksFileDTO::class,
             provider: TaskHasFilesProvider::class
         ),
+        new Get(
+            uriTemplate: '/file/{id}',
+            uriVariables: [
+                'id' => new Link(fromProperty: 'id', fromClass: TaskHasFile::class)],
+            normalizationContext: ['groups' => 'file:read'],
+            provider: TaskHasFileByIdProvider::class),
         new Get(
             uriTemplate: '/tasks/{taskId}/files/{fileId}',
             uriVariables: [
