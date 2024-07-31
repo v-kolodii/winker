@@ -44,7 +44,7 @@ class TaskUpdateProcessor implements ProcessorInterface
         $newManager = $this->getNewManager($user);
 
         /**@var Task $task*/
-        $task = $newManager->getRepository(Task::class)->find($taskId);
+        $task = $newManager->find(Task::class, $taskId);
         $task->setTitle($data->title ?? $task->getTitle());
         $task->setDescription($data->description ?? $task->getDescription());
         $task->setTaskType($data->taskType ? TaskType::from($data->taskType) : $task->getTaskType());
@@ -63,7 +63,6 @@ class TaskUpdateProcessor implements ProcessorInterface
         }
         $task->setParent($parent);
         $task->setListEnable($data->listEnable ?? $task->getListEnable());
-
         $newManager->flush();
 
         try {
