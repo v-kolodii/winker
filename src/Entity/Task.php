@@ -3,12 +3,14 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model\Operation;
 use App\ApiResource\State\Processors\PersistProcessor;
+use App\ApiResource\State\Processors\RemoveTaskProcessor;
 use App\ApiResource\State\Processors\TaskUpdateProcessor;
 use App\ApiResource\State\Providers\TaskAssignedToMeCollectionProvider;
 use App\ApiResource\State\Providers\TaskCreatedByMeCollectionProvider;
@@ -71,9 +73,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
                 read: false,
                 processor: TaskUpdateProcessor::class,
             ),
-//            new Delete(
-//                processor: RemoveProcessor::class
-//            ),
+            new Delete(
+                provider: TaskProvider::class,
+                processor: RemoveTaskProcessor::class
+            ),
         ],
     normalizationContext: [
         'groups' => ['task:read'],
