@@ -14,4 +14,11 @@ class WinkerController extends AbstractController
 
         return $this->render('index.html.twig');
     }
+
+    #[Route('/privacy-policy', name: 'privacy_policy')]
+    public function privacyPolicy(): Response
+    {
+
+        return $this->render('privacy.html.twig');
+    }
 }
