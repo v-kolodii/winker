@@ -3,8 +3,10 @@
 namespace App\EventListener;
 
 use App\Entity\TaskHasComment;
+use App\Service\MercureNotificationService;
 use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
+use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -17,11 +19,15 @@ readonly class TaskCommentChangedListener
 {
     public function __construct(
         private LoggerInterface     $logger,
-        private NotificationService $notificationService
+        private NotificationService $notificationService,
+        private MercureNotificationService $mercureNotificationService,
     ) {
     }
 
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function postPersist(TaskHasComment $taskHasComment, LifecycleEventArgs $args): void
     {
         $entity = $args->getObject();
@@ -29,6 +35,7 @@ readonly class TaskCommentChangedListener
             return;
         }
 
+        $this->mercureNotificationService->sendNotification('new', $entity);
         try {
             $this->notificationService->sendNotification('new', $entity);
         } catch (\Exception|Throwable $exception) {
@@ -36,8 +43,12 @@ readonly class TaskCommentChangedListener
         }
     }
 
+    /**
+     * @throws EntityNotFoundException
+     */
     public function postUpdate(TaskHasComment $taskHasComment, PostUpdateEventArgs $event): void
     {
+        $this->mercureNotificationService->sendNotification('updated', $taskHasComment);
         try {
             $this->notificationService->sendNotification('updated', $taskHasComment);
         } catch (\Exception|Throwable $exception) {

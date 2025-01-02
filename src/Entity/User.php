@@ -8,8 +8,10 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Post;
 use ApiPlatform\OpenApi\Model\Operation;
 use App\ApiResource\State\Processors\AddDeviceTokenProcessor;
+use App\ApiResource\State\Providers\MercureTokenProvider;
 use App\ApiResource\State\Providers\UserCompanyProvider;
 use App\ApiResource\State\Providers\UserInfoProvider;
+use App\DTO\MercureTokenDTO;
 use App\Repository\UserRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -23,6 +25,15 @@ use Symfony\Component\Serializer\Annotation\Groups;
 #[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 #[ApiResource(
     operations: [
+        new Get(
+            uriTemplate: '/mercure-token',
+            openapiContext: [
+                'summary' => 'Generate Mercure subscription token',
+                'description' => 'Returns a JWT token for Mercure subscriptions.',
+            ],
+            output: MercureTokenDTO::class,
+            provider: MercureTokenProvider::class,
+        ),
         new Get(
             uriTemplate: '/users/user-info',
             openapi: new Operation(

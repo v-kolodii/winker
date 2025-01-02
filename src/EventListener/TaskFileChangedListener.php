@@ -3,6 +3,7 @@
 namespace App\EventListener;
 
 use App\Entity\TaskHasFile;
+use App\Service\MercureNotificationService;
 use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
@@ -15,7 +16,8 @@ readonly class TaskFileChangedListener
 {
     public function __construct(
         private LoggerInterface     $logger,
-        private NotificationService $notificationService
+        private NotificationService $notificationService,
+        private MercureNotificationService $mercureNotificationService,
     ) {
     }
 
@@ -29,6 +31,7 @@ readonly class TaskFileChangedListener
 
         try {
             $this->notificationService->sendNotification('new', $entity);
+            $this->mercureNotificationService->sendNotification('new', $entity);
         } catch (\Exception|Throwable $exception) {
             $this->logger->error( '[NEW FILE. SEND NOTIFICATION ERROR]: ' . $exception->getMessage());
         }
