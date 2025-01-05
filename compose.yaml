@@ -12,7 +12,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-app}:${POSTGRES_PASSWORD:-root}@database:5432/${POSTGRES_DB:-winker}?serverVersion=${POSTGRES_VERSION:-15}&charset=${POSTGRES_CHARSET:-utf8}
       # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
       MERCURE_URL: ${MERCURE_URL:-http://mercure/.well-known/mercure}
-      MERCURE_PUBLIC_URL: https://${MERCURE_PUBLIC_URL:-winker.com.ua}/.well-known/mercure
+      MERCURE_PUBLIC_URL: ${MERCURE_PUBLIC_URL:-https://winker.com.ua/.well-known/mercure}
       MERCURE_JWT_SECRET: ${MERCURE_JWT_SECRET:-SeDM+L3BbxUkbNprZ2/oaSdZ61ANHjt0lOyv4VQSd+A=}
       # The two next lines can be removed after initial installation
       SYMFONY_VERSION: ${SYMFONY_VERSION:-}
