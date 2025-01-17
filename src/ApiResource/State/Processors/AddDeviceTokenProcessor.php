@@ -11,6 +11,8 @@ use App\Entity\User;
 use App\Entity\UserDevice;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\SecurityBundle\Security;
+use PhpAmqpLib\Connection\AMQPStreamConnection;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class AddDeviceTokenProcessor implements ProcessorInterface
 {
@@ -19,7 +21,8 @@ class AddDeviceTokenProcessor implements ProcessorInterface
     public function __construct(
         private readonly ManagerRegistry $managerRegistry,
         private readonly Security $security,
-        private readonly CompanyEntityManager   $companyEntityManagerService,
+        private readonly CompanyEntityManager $companyEntityManagerService,
+        private readonly ParameterBagInterface $parameterBag,
     ) {
     }
 
@@ -35,6 +38,8 @@ class AddDeviceTokenProcessor implements ProcessorInterface
         if (!$userDevice) {
             $userDevice = new UserDevice();
             $userDevice->setUserId($user->getId());
+        } else {
+            $this->deleteOldQueue($userDevice->getDeviceToken());
         }
 
         $userDevice->setDeviceToken($data->getDeviceToken());
@@ -42,5 +47,25 @@ class AddDeviceTokenProcessor implements ProcessorInterface
         $newManager->flush();
 
         return UserDeviceDTO::fromEntity($userDevice);
+    }
+
+    private function deleteOldQueue(?string $deviceToken): void
+    {
+        $username = $this->parameterBag->get('messenger_user');
+        $password = $this->parameterBag->get('messenger_pass');
+
+        $connection = new AMQPStreamConnection('rabbitmq', 5672, $username, $password, '/');
+        $channel = $connection->channel();
+
+        $queueName = sprintf('user_queue_%s', $deviceToken);
+
+        $queues = $channel->queue_declare($queueName, false, true, false, false);
+
+        if (!empty($queues)) {
+            $channel->queue_delete($queueName);
+        }
+
+        $channel->close();
+        $connection->close();
     }
 }
