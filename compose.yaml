@@ -79,6 +79,9 @@ services:
       RABBITMQ_DEFAULT_PASS: winker_Nubi%a_2525
       RABBITMQ_ERLANG_COOKIE: 'SeDM+L3BbxUkbNprZ2'
       RABBITMQ_DEFAULT_VHOST: /
+      RABBITMQ_HEARTBEAT: 10
+      RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS: "-rabbit tcp_listen_options [{keepalive,true}]"
+      
 
 volumes:
   caddy_data:

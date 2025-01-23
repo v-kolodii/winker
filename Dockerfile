@@ -33,6 +33,7 @@ RUN set -eux; \
     	pdo_pgsql \
     	amqp \
     	bcmath \
+    	sockets \
 	;
 
 ###> recipes ###

@@ -8,18 +8,18 @@ framework:
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
             # sync: 'sync://'
-            user_notifications:
-                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
-                options:
-                    exchange:
-                        name: 'user_notifications_exchange'
-                        type: direct
-                    queues: {}
-
-        routing:
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
-            App\Message\NotificationInterface: user_notifications
+#            user_notifications:
+#                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+#                options:
+#                    exchange:
+#                        name: 'user_notifications_exchange'
+#                        type: direct
+#                    queues: {}
+#
+#        routing:
+#            # Route your messages to the transports
+#            # 'App\Message\YourMessage': async
+#            App\Message\NotificationInterface: user_notifications
 
 # when@test:
 #    framework:

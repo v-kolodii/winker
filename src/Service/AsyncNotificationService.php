@@ -9,7 +9,6 @@ use PhpAmqpLib\Connection\AMQPStreamConnection;
 use PhpAmqpLib\Message\AMQPMessage;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
 use Symfony\Component\Messenger\MessageBusInterface;
 
 class AsyncNotificationService
@@ -54,7 +53,9 @@ class AsyncNotificationService
                 $performerId = $task->getUserId();
             }
         }
-
+        $this->logger->info('NEW ASYNC MESSAGE SEND', [
+            'task' => $task->toArray()
+        ]);
         $notification = $this->dispatchNotification($object, $task, $performerId);
         $this->logger->info('NEW ASYNC MESSAGE SEND', [
             'message' => $notification
@@ -81,7 +82,9 @@ class AsyncNotificationService
                 $recipientId = $task->getUserId();
             }
         }
-
+        $this->logger->info('UPDATE ASYNC MESSAGE SEND', [
+            'task' => $task->toArray()
+        ]);
         $notification = $this->dispatchNotification($object, $task, $recipientId);
         $this->logger->info('UPDATE ASYNC MESSAGE SEND', [
             'message' => $notification
@@ -142,11 +145,13 @@ class AsyncNotificationService
             'mesType' => $object->getMessageType(),
         ]);
 
+        $this->amqpChannel->confirm_select();
         $msg = new AMQPMessage($notification, [
             'delivery_mode' => AMQPMessage::DELIVERY_MODE_PERSISTENT,  // Забезпечує збереження повідомлення
         ]);
+        $this->ensureConnection();
         $this->amqpChannel->basic_publish($msg, 'user_notifications_exchange', $routingKey);
-
+        $this->amqpChannel->wait_for_pending_acks();
 // Перевірка чи існує черга
 //        list($queue, ,) = $this->amqpChannel->queue_declare($queueName, false, true, false, false);
 //        if (!$queue) {
@@ -175,7 +180,26 @@ class AsyncNotificationService
 //        $this->messageBus->dispatch($notification, [
 //            new AmqpStamp($routingKey),
 //        ]);
+//        $this->amqpChannel->close();
+//        $this->amqpConnection->close();
 
         return $notification;
+    }
+
+    public function __destruct()
+    {
+        $this->amqpChannel->close();
+        if ($this->amqpConnection->isConnected()) {
+            $this->amqpConnection->close();
+        }
+    }
+
+    private function ensureConnection(): void
+    {
+        if (!$this->amqpConnection->isConnected()) {
+            $this->logger->warning('Reconnecting to RabbitMQ...');
+            $this->amqpConnection->reconnect();
+            $this->amqpChannel = $this->amqpConnection->channel();
+        }
     }
 }
