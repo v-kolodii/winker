@@ -4,6 +4,11 @@ framework:
         # failure_transport: failed
 
         transports:
+            kafka:
+                dsn: '%env(KAFKA_DSN)%'
+                options:
+                    topic: 'user_notifications_*' # Wildcard для всіх користувачів
+                    queue: 'user_notifications'
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
@@ -16,7 +21,8 @@ framework:
 #                        type: direct
 #                    queues: {}
 #
-#        routing:
+        routing:
+            App\Message\UserTaskNotification: kafka
 #            # Route your messages to the transports
 #            # 'App\Message\YourMessage': async
 #            App\Message\NotificationInterface: user_notifications

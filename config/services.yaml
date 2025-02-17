@@ -35,3 +35,7 @@ services:
         
     App\ApiResource\State\Providers\TaskAssignedToMeCollectionProvider:
         tags: [ { name: 'api_platform.collection_data_provider', priority: 2 } ]
+
+    App\Service\KafkaNotificationService:
+        arguments:
+            $transport: '@messenger.transport.kafka'

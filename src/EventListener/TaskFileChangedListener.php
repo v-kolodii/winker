@@ -4,6 +4,7 @@ namespace App\EventListener;
 
 use App\Entity\TaskHasFile;
 use App\Service\AsyncNotificationService;
+use App\Service\KafkaNotificationService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -15,7 +16,7 @@ readonly class TaskFileChangedListener
 {
     public function __construct(
         private LoggerInterface $logger,
-        private AsyncNotificationService $asyncNotificationService,
+        private KafkaNotificationService $asyncNotificationService,
     ) {
     }
 

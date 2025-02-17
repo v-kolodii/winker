@@ -34,6 +34,7 @@ RUN set -eux; \
     	amqp \
     	bcmath \
     	sockets \
+    	rdkafka \
 	;
 
 ###> recipes ###

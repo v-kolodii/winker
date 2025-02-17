@@ -4,6 +4,7 @@ namespace App\EventListener;
 
 use App\Entity\TaskHasComment;
 use App\Service\AsyncNotificationService;
+use App\Service\KafkaNotificationService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Event\PostUpdateEventArgs;
 use Doctrine\ORM\Events;
@@ -16,7 +17,7 @@ use Throwable;
 readonly class TaskCommentChangedListener
 {
     public function __construct(
-        private AsyncNotificationService $asyncNotificationService,
+        private KafkaNotificationService $asyncNotificationService,
         private LoggerInterface $logger,
     ) {
     }
