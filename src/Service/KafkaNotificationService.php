@@ -5,19 +5,26 @@ namespace App\Service;
 use App\Entity\Task;
 use App\Message\UserTaskNotification;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Transport\TransportInterface;
+use RdKafka\Conf;
+use RdKafka\Exception;
+use RdKafka\Producer;
 
 class KafkaNotificationService
 {
     public const string NEW = 'new';
     public const string UPDATED = 'updated';
+    private const int DEFAULT_TIMEOUT = 1000;
 
+    private Producer $producer;
 
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly TransportInterface $transport,
+        private readonly string $kafkaBroker = 'kafka:9092',
     ) {
+        $conf = new Conf();
+        $conf->set('enable.idempotence', 'true');
+        $this->producer = new Producer($conf);
+        $this->producer->addBrokers($this->kafkaBroker);
     }
 
     public function sendNotification(string $type, object $object): void
@@ -71,18 +78,70 @@ class KafkaNotificationService
      * @param Task $task
      * @param int|null $recipientId
      * @return UserTaskNotification
+     * @throws Exception
      */
     public function dispatchNotification(mixed $object, Task $task, ?int $recipientId): UserTaskNotification
     {
-        $topic = "user_notifications_{$recipientId}";
+//        $topic = new RdKafkaTopic("user_notifications_{$recipientId}");
+//        $topic = $this->kafkaContext->createTopic("user_notifications_{$recipientId}");
         $notification = new UserTaskNotification(
             target: $object->toArray(),
             task: $task->toArray(),
             mesType: $object->getMessageType(),
-            topic: $topic
+            topic: "user_notifications_{$recipientId}"
         );
 
-        $this->transport->send(new Envelope($notification));
+//        $message = new RdKafkaMessage(json_encode([
+//
+//        ]));
+
+//        $producer = $this->kafkaContext->createProducer();
+
+//        $kafkaMessage = $this->kafkaContext->createMessage(json_encode([
+//            'target'=> $object->toArray(),
+//            'task'=> $task->toArray(),
+//            'mesType'=> $object->getMessageType(),
+//            'topic'=> $topic->getTopicName()
+//        ]));
+
+//        $producer->send($topic, $kafkaMessage);
+
+//        $this->producer->sendEvent(
+//            "user_notification_{$recipientId}",
+//            json_encode([
+//                'target'=> $object->toArray(),
+//                'task'=> $task->toArray(),
+//                'mesType'=> $object->getMessageType(),
+//                'topic'=> "user_notification_{$recipientId}"
+//            ])
+//        );
+
+        $messageBody = json_encode([
+            'target'=> $object->toArray(),
+            'task'=> $task->toArray(),
+            'mesType'=> $object->getMessageType()
+        ]);
+
+//        $this->logger->info('Attempting to send Kafka message', [
+//            'topic' => "user_notification_2",
+//            'message' => $messageBody
+//        ]);
+
+        $topic = $this->producer->newTopic("user_notifications_{$recipientId}");
+        $topic->produce(RD_KAFKA_PARTITION_UA, 0, $messageBody);
+
+        for ($i = 0; $i < 3; $i++) {
+            $this->logger->info('KAFKA ATTEMP: -' . $i);
+            $result = $this->producer->flush(self::DEFAULT_TIMEOUT);
+            if (RD_KAFKA_RESP_ERR_NO_ERROR === $result) {
+                $this->logger->info('KAFKA ATTEMP SUCCESS: -' . $i);
+                $this->logger->info('Kafka message sent successfully', [$messageBody]);
+
+                return $notification;
+            }
+        }
+
+        $this->logger->critical('Kafka message not sent', [$messageBody]);
 
         return $notification;
     }

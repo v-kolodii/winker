@@ -2,13 +2,32 @@ framework:
     messenger:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         # failure_transport: failed
-
         transports:
-            kafka:
-                dsn: '%env(KAFKA_DSN)%'
-                options:
-                    topic: 'user_notifications_*' # Wildcard для всіх користувачів
-                    queue: 'user_notifications'
+#            user_notification_{userId}:
+#                dsn: 'rdkafka://kafka:9093/user_notification_{userId}'
+#                options:
+#                    kafka_config:
+#                        - { key: 'bootstrap.servers', value: 'kafka:9093' }
+#                        - { key: 'group.id', value: 'symfony_user_notification_{userId}' }
+#                        - { key: 'auto.offset.reset', value: 'earliest' }
+        
+        routing:
+#            App\Message\UserTaskNotification: user_notification_{userId}
+#        transports:
+#            kafka:
+#                dsn: 'enqueue://default'
+#                options:
+#                    topic: 'user_notifications'
+                
+#                dsn: '%env(KAFKA_DSN)%'
+#                options:
+#                    topic: 'user_notifications'
+            
+#            kafka:
+#                dsn: '%env(KAFKA_DSN)%'
+#                options:
+#                    topic: 'user_notifications_*' # Wildcard для всіх користувачів
+#                    queue: 'user_notifications'
             # https://symfony.com/doc/current/messenger.html#transport-configuration
             # async: '%env(MESSENGER_TRANSPORT_DSN)%'
             # failed: 'doctrine://default?queue_name=failed'
@@ -21,8 +40,8 @@ framework:
 #                        type: direct
 #                    queues: {}
 #
-        routing:
-            App\Message\UserTaskNotification: kafka
+#        routing:
+#            App\Message\UserTaskNotification: kafka
 #            # Route your messages to the transports
 #            # 'App\Message\YourMessage': async
 #            App\Message\NotificationInterface: user_notifications

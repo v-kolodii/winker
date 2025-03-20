@@ -14,7 +14,6 @@
         "doctrine/doctrine-migrations-bundle": "^3.3",
         "doctrine/orm": "^2.17",
         "easycorp/easyadmin-bundle": "^4.8",
-        "enqueue/rdkafka": "^0.10.20",
         "kreait/firebase-bundle": "^5.3",
         "lexik/jwt-authentication-bundle": "^2.20",
         "nelmio/cors-bundle": "^2.4",
@@ -105,6 +104,7 @@
     },
     "require-dev": {
         "doctrine/doctrine-fixtures-bundle": "^3.5",
+        "kwn/php-rdkafka-stubs": "^2.2",
         "symfony/debug-bundle": "7.0.*",
         "symfony/maker-bundle": "^1.52",
         "symfony/stopwatch": "7.0.*",

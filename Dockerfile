@@ -25,6 +25,7 @@ RUN apk add --no-cache \
 	;
 
 RUN set -eux; \
+    apk add --no-cache librdkafka-dev; \
 	install-php-extensions \
 		apcu \
 		intl \
@@ -35,6 +36,7 @@ RUN set -eux; \
     	bcmath \
     	sockets \
     	rdkafka \
+    	pcntl\
 	;
 
 ###> recipes ###
