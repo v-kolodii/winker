@@ -32,8 +32,6 @@ readonly class TaskCommentChangedListener
 
         try {
             $this->asyncNotificationService->sendNotification('new', $entity);
-//            $this->mercureNotificationService->sendNotification('new', $entity);
-//            $this->notificationService->sendNotification('new', $entity);
         } catch (\Exception|Throwable $exception) {
             $this->logger->error( '[NEW COMMENT. SEND NOTIFICATION ERROR]: ' . $exception->getMessage());
         }
@@ -43,8 +41,6 @@ readonly class TaskCommentChangedListener
     {
         try {
             $this->asyncNotificationService->sendNotification('updated', $taskHasComment);
-//            $this->mercureNotificationService->sendNotification('updated', $taskHasComment);
-//            $this->notificationService->sendNotification('updated', $taskHasComment);
         } catch (\Exception|Throwable $exception) {
             $this->logger->error( '[UPDATE COMMENT. SEND NOTIFICATION ERROR]: ' . $exception->getMessage());
         }

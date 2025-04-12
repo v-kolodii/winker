@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Task;
+use App\Entity\TaskHasComment;
+use App\Entity\TaskHasFile;
 use App\Message\UserTaskNotification;
 use Psr\Log\LoggerInterface;
 use RdKafka\Conf;
@@ -82,8 +84,6 @@ class KafkaNotificationService
      */
     public function dispatchNotification(mixed $object, Task $task, ?int $recipientId): UserTaskNotification
     {
-//        $topic = new RdKafkaTopic("user_notifications_{$recipientId}");
-//        $topic = $this->kafkaContext->createTopic("user_notifications_{$recipientId}");
         $notification = new UserTaskNotification(
             target: $object->toArray(),
             task: $task->toArray(),
@@ -91,41 +91,13 @@ class KafkaNotificationService
             topic: "user_notifications_{$recipientId}"
         );
 
-//        $message = new RdKafkaMessage(json_encode([
-//
-//        ]));
-
-//        $producer = $this->kafkaContext->createProducer();
-
-//        $kafkaMessage = $this->kafkaContext->createMessage(json_encode([
-//            'target'=> $object->toArray(),
-//            'task'=> $task->toArray(),
-//            'mesType'=> $object->getMessageType(),
-//            'topic'=> $topic->getTopicName()
-//        ]));
-
-//        $producer->send($topic, $kafkaMessage);
-
-//        $this->producer->sendEvent(
-//            "user_notification_{$recipientId}",
-//            json_encode([
-//                'target'=> $object->toArray(),
-//                'task'=> $task->toArray(),
-//                'mesType'=> $object->getMessageType(),
-//                'topic'=> "user_notification_{$recipientId}"
-//            ])
-//        );
-
         $messageBody = json_encode([
             'target'=> $object->toArray(),
             'task'=> $task->toArray(),
-            'mesType'=> $object->getMessageType()
+            'mesType'=> $object->getMessageType(),
+            'comments'=> $task->getTaskHasComments()->map(fn (TaskHasComment $taskHasComment) => $taskHasComment->toArray())->toArray(),
+            'files'=> $task->getTaskHasFiles()->map(fn (TaskHasFile $taskHasFile) => $taskHasFile->toArray())->toArray(),
         ]);
-
-//        $this->logger->info('Attempting to send Kafka message', [
-//            'topic' => "user_notification_2",
-//            'message' => $messageBody
-//        ]);
 
         $topic = $this->producer->newTopic("user_notifications_{$recipientId}");
         $topic->produce(RD_KAFKA_PARTITION_UA, 0, $messageBody);
