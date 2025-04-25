@@ -149,10 +149,7 @@ services:
 #      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/kafka_jaas.conf"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_LOG_RETENTION_HOURS: 24
 #      KAFKA_HEAP_OPTS: "-Xmx1G -Xms512M"
-    volumes:
-      - ./kafka_jaas.conf:/etc/kafka/kafka_jaas.conf
     depends_on:
       - zookeeper
     networks:
