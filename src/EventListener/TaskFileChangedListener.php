@@ -5,6 +5,7 @@ namespace App\EventListener;
 use App\Entity\TaskHasFile;
 use App\Service\AsyncNotificationService;
 use App\Service\KafkaNotificationService;
+use App\Service\NotificationService;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsEntityListener;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -17,6 +18,7 @@ readonly class TaskFileChangedListener
     public function __construct(
         private LoggerInterface $logger,
         private KafkaNotificationService $asyncNotificationService,
+        private NotificationService $notificationService,
     ) {
     }
 
@@ -29,7 +31,8 @@ readonly class TaskFileChangedListener
         }
 
         try {
-            $this->asyncNotificationService->sendNotification('new', $entity);
+//            $this->asyncNotificationService->sendNotification('new', $entity);
+            $this->notificationService->sendNotification('new', $entity);
         } catch (\Exception|Throwable $exception) {
             $this->logger->error( '[NEW FILE. SEND NOTIFICATION ERROR]: ' . $exception->getMessage());
         }
