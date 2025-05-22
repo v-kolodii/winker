@@ -38,9 +38,10 @@ class AddDeviceTokenProcessor implements ProcessorInterface
         if (!$userDevice) {
             $userDevice = new UserDevice();
             $userDevice->setUserId($user->getId());
-        } else {
-            $this->deleteOldQueue($userDevice->getDeviceToken());
         }
+//        else {
+//            $this->deleteOldQueue($userDevice->getDeviceToken());
+//        }
 
         $userDevice->setDeviceToken($data->getDeviceToken());
         $newManager->persist($userDevice);
