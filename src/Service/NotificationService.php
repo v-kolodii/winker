@@ -3,6 +3,8 @@
 namespace App\Service;
 
 use App\Entity\Task;
+use App\Entity\TaskHasComment;
+use App\Entity\TaskHasFile;
 use App\Entity\UserDevice;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\EntityNotFoundException;
@@ -66,8 +68,14 @@ class NotificationService
             throw new EntityNotFoundException('User\'s device token not found. User id ' . $performerId);
         }
 
+        $title = match (true) {
+            $object instanceof Task => sprintf('Створено нову задачу "%s"', $task->getTitle()),
+            $object instanceof TaskHasComment => sprintf('Додано новий коментар до задачі "%s"', $task->getTitle()),
+            $object instanceof TaskHasFile => sprintf('Додано новий файл до задачі "%s"', $task->getTitle()),
+        };
+
         $notification = Notification::fromArray([
-            'title' => $object->getNewNotificationTitle(),
+            'title' =>$title,
         ]);
 
         $data = [
@@ -77,7 +85,7 @@ class NotificationService
         ];
 
         return CloudMessage::withTarget('token', $userDevice->getDeviceToken())
-//            ->withNotification($notification)
+            ->withNotification($notification)
             ->withData($data);
     }
 
@@ -100,9 +108,13 @@ class NotificationService
         if (!$deviceToken) {
             throw new EntityNotFoundException('User\'s device token not found. User id ' . $recipientId);
         }
+        $title = match (true) {
+            $object instanceof Task => sprintf('Відредаговано задачу "%s"', $task->getTitle()),
+            $object instanceof TaskHasComment => sprintf('Змінено коментар до задачі "%s"', $task->getTitle()),
+        };
 
         $notification = Notification::fromArray([
-            'title' => $object->getUpdatedNotificationTitle(),
+            'title' => $title,
         ]);
 
         $data = [
@@ -112,7 +124,7 @@ class NotificationService
         ];
 
         return CloudMessage::withTarget('token', $deviceToken)
-//            ->withNotification($notification)
+            ->withNotification($notification)
             ->withData($data);
     }
 }
