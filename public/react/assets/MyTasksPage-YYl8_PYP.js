@@ -1,0 +1,1 @@
+import{u as r,a,r as i,h as c,j as n}from"./index-CGKVFZRy.js";import{b as m}from"./selectors-B_WODwwk.js";import{a as p,T as k}from"./TasksContainer-BFzMMQJ1.js";import"./kat64-DBcL8H-d.js";const y=()=>{const s=r(),t=a(m),e=a(p);i.useEffect(()=>{t.length===0&&s(c())},[s,t.length]);const o=e;return n.jsx(k,{tasks:o})};export{y as default};

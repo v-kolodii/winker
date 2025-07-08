@@ -1,0 +1,1 @@
+const a=s=>s.tasks.allTasks,t=s=>s.tasks.myTasks,e=s=>s.tasks.assignedTasks,o=s=>s.tasks.modal,k=s=>s.tasks.taskDetails,c=s=>s.tasks.isLoading,l=s=>s.tasks.error;export{o as a,t as b,e as c,c as d,l as e,k as f,a as s};
